@@ -205,6 +205,57 @@ button{font:inherit;touch-action:manipulation}
 .rates td{padding:2px 4px;border-bottom:1px solid var(--panel-lo)}
 .rates td:last-child{text-align:right;font-variant-numeric:tabular-nums}
 
+/* interactive widget steps */
+.widget{display:flex;flex-direction:column;gap:10px;color:var(--ink);min-height:0}
+.wq{margin:0;font-size:22px;line-height:1.15}
+.wq b{background:var(--hi);color:#0d0d16;padding:0 4px;font-weight:400;white-space:nowrap}
+.trow{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:22px}
+.sw{width:64px;height:32px;border:0;background:var(--panel-lo);box-shadow:0 0 0 2px var(--ink);position:relative;cursor:pointer;flex:none;padding:0}
+.sw::after{content:"";position:absolute;top:4px;left:4px;width:24px;height:24px;background:var(--paper);box-shadow:0 0 0 2px var(--ink);transition:left .12s}
+.sw[aria-checked="true"]{background:var(--good)}
+.sw[aria-checked="true"]::after{left:36px}
+.sw:focus-visible,.ck:focus-visible,.clist button:focus-visible,.cgrid button:focus-visible{outline:3px solid var(--hi);outline-offset:2px}
+.bigval{font-family:var(--f-display);font-size:34px;text-align:center;font-variant-numeric:tabular-nums}
+.rng{width:100%;height:36px;accent-color:var(--bg)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.steps .btn,.keys .btn{justify-content:center}
+.ck{display:flex;align-items:center;gap:10px;font-size:20px;background:none;border:0;text-align:left;color:var(--ink);cursor:pointer;padding:2px 0;font-family:var(--f-body)}
+.ck i{width:22px;height:22px;flex:none;background:var(--paper);color:#0d0d16;box-shadow:0 0 0 2px var(--ink);display:grid;place-items:center;font-style:normal;font-family:var(--f-display);font-size:14px}
+.clist{max-height:210px;overflow:auto;box-shadow:0 0 0 2px var(--ink);background:var(--paper)}
+.clist button{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid var(--panel);background:none;font-family:var(--f-body);font-size:20px;padding:6px 8px;color:#0d0d16;cursor:pointer}
+.clist button:hover{background:var(--hi)}
+.kfield{background:var(--paper);color:#0d0d16;box-shadow:0 0 0 2px var(--ink);font-family:var(--f-display);font-size:22px;letter-spacing:.2em;padding:8px;min-height:44px;text-align:center}
+.keys{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.keys .btn{font-family:var(--f-display);font-size:16px;padding:10px 0}
+.cgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:240px;margin:0 auto;width:100%}
+.cgrid button{aspect-ratio:1;background:var(--paper);border:0;box-shadow:0 0 0 2px var(--ink);display:grid;place-items:center;cursor:pointer;padding:0}
+.cgrid button canvas{width:62%;height:62%;image-rendering:pixelated}
+.cgrid button[aria-pressed="true"]{box-shadow:0 0 0 4px var(--bg);background:var(--cyan)}
+.desk{position:relative;height:270px;background:var(--bg2);box-shadow:0 0 0 2px var(--ink);overflow:hidden}
+.pop{position:absolute;width:156px;background:var(--panel);box-shadow:0 0 0 2px var(--ink),3px 3px 0 var(--ink);font-size:17px;color:var(--ink)}
+.pop .pt{display:flex;justify-content:space-between;align-items:center;gap:4px;background:var(--bad);color:var(--paper);font-family:var(--f-display);font-size:9px;padding:2px 2px 2px 4px}
+.pop .pt button{width:22px;height:18px;font-size:10px;padding:0;border:0;background:var(--panel);color:#0d0d16;cursor:pointer;font-family:var(--f-display)}
+.pop .pb{padding:5px 6px;display:flex;flex-direction:column;gap:5px;line-height:1}
+.pop .pb .btn{font-size:16px;justify-content:center;padding:4px}
+.holdbtn{-webkit-touch-callout:none;user-select:none}
+.holdbar{height:22px;box-shadow:0 0 0 2px var(--ink);background:var(--paper)}
+.holdbar i{display:block;height:100%;width:0;background:repeating-linear-gradient(90deg,var(--good) 0 8px,transparent 8px 10px)}
+body.fx-big .list .btn{font-size:30px;padding:10px 12px}
+
+/* the drawing room: a warm safe room */
+#room{--wood:#140e0a;--brass:#d6b26a;--cream:#efe6cf;--oak:#5a4128;--oak-hi:#7a5a3a;--oak-lo:#2c1d12;background:var(--wood);color:var(--cream)}
+.rtitle{font-family:var(--f-display);font-weight:700;font-size:clamp(22px,7vw,32px);color:var(--brass);margin:0;text-shadow:3px 3px 0 #000}
+#room .sub{color:#b9a77f}
+#roomcv{width:min(100%,480px);aspect-ratio:160/100;image-rendering:pixelated;box-shadow:0 0 0 3px #000,0 0 0 5px var(--oak-lo)}
+.rstat{font-family:var(--f-display);font-size:9px;letter-spacing:.08em;color:var(--brass)}
+.rmsg{width:min(100%,480px);min-height:3.6em;background:#000;border:2px solid #8a7a5a;color:var(--cream);font-size:22px;padding:10px 12px;text-align:left;line-height:1.15}
+.ract{width:min(100%,480px);display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#room .btn{background:var(--oak);color:var(--cream);box-shadow:inset -3px -3px 0 var(--oak-lo),inset 3px 3px 0 var(--oak-hi),0 0 0 2px #000}
+#room .btn:hover{background:var(--oak-hi)}
+.rsnd{background:none;border:1px solid #8a7a5a;color:#b9a77f;font-family:var(--f-display);font-size:9px;padding:5px 8px;cursor:pointer}
+#door{position:fixed;inset:0;z-index:70;background:#000;display:grid;place-items:center;opacity:0;transition:opacity 1s ease;color:#efe6cf;font-family:var(--f-display);font-size:18px;letter-spacing:.2em;pointer-events:none}
+#door.on{opacity:1;pointer-events:auto}
+
 /* in-game effects from menu actions */
 body.fx-comic,body.fx-comic *{font-family:"Comic Sans MS","Comic Neue","Chalkboard SE",cursive!important;letter-spacing:0!important}
 body.fx-dark #app{--panel:#26252e;--panel-hi:#43414f;--panel-lo:#0b0a10;--ink:#ebe7d9}
@@ -287,6 +338,7 @@ body.fx-off #app{animation:crt 1.4s ease-in-out}
   <div class="sub" id="onear">YOU RAN OUT OF TIME. THE MENUS DID NOT.</div>
   <div class="panel">
     <dl class="stats" id="ostats"></dl>
+    <button class="btn big prime" id="oload" type="button" hidden>▸ LOAD SAVE</button>
     <button class="btn big prime" id="again" type="button">▸ ONE MORE GO</button>
     <button class="btn big" id="ocoll" type="button">COLLECTABLES</button>
     <button class="btn big" id="tomenu" type="button">MAIN MENU</button>
@@ -331,6 +383,17 @@ body.fx-off #app{animation:crt 1.4s ease-in-out}
   </div>
 </div>
 
+<div class="screen" id="room" hidden>
+  <p class="rtitle">THE DRAWING ROOM</p>
+  <div class="sub">TIME IS PAUSED. THE MENUS CANNOT REACH YOU HERE.</div>
+  <canvas id="roomcv" width="160" height="100" aria-label="A warm room with a desk, a typewriter, a lamp, an item box, a plant and a door"></canvas>
+  <div class="rstat" id="rstat"></div>
+  <div class="rmsg" id="rmsg" aria-live="polite"></div>
+  <div class="ract" id="ract"></div>
+  <button class="rsnd" id="rsnd" type="button">MUSIC: ON</button>
+</div>
+<div id="door" hidden><span id="dtext"></span></div>
+
 <div class="screen" id="modal" hidden></div>
 <div id="toast" role="status"></div>
 
@@ -367,9 +430,10 @@ const sfx={
 };
 
 /* ---------- CONTENT ---------- */
-const ROOT=["Settings","Options","Preferences","Menu","More…","System","Tools","Advanced","Control Panel","☰ Hamburger","Config","Setup","Hub","Dashboard","Start","Home","Main Menu","Admin","Customise","Extras","Utilities","Manage","Account Centre","⋮ Kebab","••• Meatballs"];
-const MID=["Audio","Video","Display","Privacy","Accessibility","Notifications","Account","Network","Bluetooth","Language","Controls","Keybinds","Gameplay","Graphics","Cookies","Legal","Storage","Battery","Updates","Security","Experimental","Developer","Personalisation","Sync","Profile","Region","Time & Date","Smart Fridge","Vibes","Feelings","Other","Miscellaneous","Danger Zone","Subscriptions","Theme","Ethics","Snacks","Advanced Advanced","Sound","Haptics","Fonts","Colours","Cursor","Mouse","Keyboard","Gestures","Voice","Camera","Microphone","Location","Permissions","Backups","Cloud","Devices","Printers","Wi-Fi","VPN","Proxy","Firewall","Passwords","Passkeys","Two-Factor","Recovery","Billing","Payments","Invoices","Loyalty Points","Rewards","Achievements","Friends","Blocked Users","Family","Parental Controls","Screen Time","Focus","Sleep","Wellbeing","Energy","Eco Mode","Performance","Overclock","Cooling","Fans","Lights","RGB","Kettle","Toaster","Doorbell","Lawnmower","Car","Garage","Thermostat","Heat Pump","Plugins","Extensions","Add-ons","Mods","Cheats","Debug","Logs","Diagnostics","Telemetry","Analytics","Tracking","Ads","Ad Choices","Partners","Third Parties","Fourth Parties","Lawyers","Feedback","Support","FAQ","Help","About","Credits","Licences","Version","Beta","Alpha","Omega","Labs","Secret","Hidden","Forbidden","Void","The Basement","Attic","Drawer of Cables","Bin","Archive","Legacy","Classic","Retro","Future","Destiny","Regret","Hope","Misc. Misc.","Sub-Settings","Meta","Menus","Pigeons","Moon","Taxes","Spreadsheets","Soup"];
-const LEAF=["Set Volume to 11","Enable Dark Mode","Disable Fun","Reset to Defaults","Mute Notifications","Apply","Apply (For Real)","Confirm Confirmation","Toggle Toggle","Save","Allow Everything","Accept Terms","Unsubscribe","Enable Turbo","Opt Out","Rename Fridge","Clear Cache","Mute Grandma","Max Brightness","Reticulate Splines","Disable Ads (£4.99)","Enable Comic Sans","Become Settings","Undo Undo","Calibrate Vibes","Delete Monday","Enable Enable","Disable Disable","Factory Reset Feelings","Turn It Off and On","Update Now","Remind Me Never","Snooze Forever","Sync to Toaster","Pair With Kettle","Allow Fridge to Vote","Set Fan to Jet Engine","Brightness: Sun","Ringtone: Screaming","Export to Fax","Print to Void","Save as FINAL_v2","Enable Haunting","Download More RAM","Rotate 360°","Uninstall Gravity","Opt In to Opting Out","Speak to Manager","Sort by Vibe","Request Desktop Site","Clear All Hope","Undo Everything","Restore Purchases","Skip Intro","Show Hidden Files","Hide Shown Files","Empty the Bin","Timezone: Vibes","Approve Pigeon","Feed the Menu"];
+const ROOT=["Settings","Options","Preferences","Menu","More…","System","Tools","Advanced","Control Panel","☰ Hamburger","Config","Setup","Hub","Dashboard","Start","Home","Main Menu","Admin","Customise","Extras","Utilities","Manage","Account Centre","⋮ Kebab","••• Meatballs","Quick Settings","Control Centre","Launcher","⚙ Gear","Taskbar","Start Menu","The Ribbon","Toolbar","Sidebar","Command Palette"];
+const MID=["Audio","Video","Display","Privacy","Accessibility","Notifications","Account","Network","Bluetooth","Language","Controls","Keybinds","Gameplay","Graphics","Cookies","Legal","Storage","Battery","Updates","Security","Experimental","Developer","Personalisation","Sync","Profile","Region","Time & Date","Smart Fridge","Vibes","Feelings","Other","Miscellaneous","Danger Zone","Subscriptions","Theme","Ethics","Snacks","Advanced Advanced","Sound","Haptics","Fonts","Colours","Cursor","Mouse","Keyboard","Gestures","Voice","Camera","Microphone","Location","Permissions","Backups","Cloud","Devices","Printers","Wi-Fi","VPN","Proxy","Firewall","Passwords","Passkeys","Two-Factor","Recovery","Billing","Payments","Invoices","Loyalty Points","Rewards","Achievements","Friends","Blocked Users","Family","Parental Controls","Screen Time","Focus","Sleep","Wellbeing","Energy","Eco Mode","Performance","Overclock","Cooling","Fans","Lights","RGB","Kettle","Toaster","Doorbell","Lawnmower","Car","Garage","Thermostat","Heat Pump","Plugins","Extensions","Add-ons","Mods","Cheats","Debug","Logs","Diagnostics","Telemetry","Analytics","Tracking","Ads","Ad Choices","Partners","Third Parties","Fourth Parties","Lawyers","Feedback","Support","FAQ","Help","About","Credits","Licences","Version","Beta","Alpha","Omega","Labs","Secret","Hidden","Forbidden","Void","The Basement","Attic","Drawer of Cables","Bin","Archive","Legacy","Classic","Retro","Future","Destiny","Regret","Hope","Misc. Misc.","Sub-Settings","Meta","Menus","Pigeons","Moon","Taxes","Spreadsheets","Soup","Clipboard","Shortcuts","Macros","Templates","Workspaces","Layers","Filters","Brushes","Inbox","Outbox","Drafts","Spam","Calendar","Reminders","Alarms","Timers","Stopwatch","Weather","Maps","Photos","Albums","Music","Podcasts","Playlists","Equaliser","Subtitles","Captions","Dubbing","Quality","Resolution","Frame Rate","V-Sync","Shadows","Anti-Aliasing","Field of View","Motion Blur","Brightness","Contrast","Gamma","HDR","Text Size","Zoom","Magnifier","Narrator","Keyboard Layout","Autocorrect","Spellcheck","Emoji","Stickers","Reactions","Read Receipts","Typing Indicator","Status","Away Message","Do Not Disturb","Quiet Hours","Bedtime","Firmware","BIOS","Boot Order","Safe Mode","Recovery Mode","Dev Tools","Console","Flags","Feature Toggles","A/B Tests","Mystery Menu","Menu Menu","Settings Settings","Ink Ribbons","Drawing Room","Typewriter","Item Box","Save Slots","Load Game","New Game+","Hard Mode","Extended Credits"];
+const SYN=[["Settings","Options","Preferences","Config","Setup","Quick Settings"],["Audio","Sound","Music","Equaliser","Volume"],["Display","Video","Graphics","Screen","Resolution"],["Privacy","Security","Permissions","Tracking","Cookies"],["Account","Profile","Status","Friends"],["Help","Support","FAQ","About"],["Network","Wi-Fi","VPN","Proxy","Bluetooth"],["Notifications","Reminders","Alarms","Do Not Disturb","Quiet Hours"],["Updates","Firmware","Version","Beta"],["Storage","Cloud","Backups","Archive"],["Accessibility","Text Size","Zoom","Magnifier","Narrator"],["Controls","Keybinds","Keyboard","Shortcuts","Mouse"]];
+const LEAF=["Set Volume to 11","Enable Dark Mode","Disable Fun","Reset to Defaults","Mute Notifications","Apply","Apply (For Real)","Confirm Confirmation","Toggle Toggle","Save","Allow Everything","Accept Terms","Unsubscribe","Enable Turbo","Opt Out","Rename Fridge","Clear Cache","Mute Grandma","Max Brightness","Reticulate Splines","Disable Ads (£4.99)","Enable Comic Sans","Become Settings","Undo Undo","Calibrate Vibes","Delete Monday","Enable Enable","Disable Disable","Factory Reset Feelings","Turn It Off and On","Update Now","Remind Me Never","Snooze Forever","Sync to Toaster","Pair With Kettle","Allow Fridge to Vote","Set Fan to Jet Engine","Brightness: Sun","Ringtone: Screaming","Export to Fax","Print to Void","Save as FINAL_v2","Enable Haunting","Download More RAM","Rotate 360°","Uninstall Gravity","Opt In to Opting Out","Speak to Manager","Sort by Vibe","Request Desktop Site","Clear All Hope","Undo Everything","Restore Purchases","Skip Intro","Show Hidden Files","Hide Shown Files","Empty the Bin","Timezone: Vibes","Approve Pigeon","Feed the Menu","Enable Night Light","Reverse Scroll Direction","Enable Large Text","Install Fonts","Clear Notifications","Defragment Menus","Reboot Router","Summon Drawing Room","Find Ink Ribbon","Enable Captions"];
 const BACK="Back";
 const WHO=["YOUR NAN","THE SMART FRIDGE","A MAN CALLED STEVE","YOUR LINE MANAGER","LEGAL","THE TOASTER","FUTURE YOU","A GHOST","IT (CRYING)","THE INTERN","YOUR CAT","THE BOARD","A SENTIENT KETTLE","THE MOON","A PIGEON","THE ALGORITHM","YOUR PRINTER","THE COMMITTEE","YOUR MUM","A RIVAL MENU","THE MENU ITSELF","SOUP"];
 const URG=["ASAP","NOW","YESTERDAY","URGENT","BEFORE LUNCH","OR ELSE","!!!","CRITICAL","VIBES-CRITICAL"];
@@ -438,7 +502,7 @@ const GOOD=["CLICK.","Menu'd.","Crisp navigation.","Your thumb is a legend.","Ve
 const BAD=["That was a decoy, champ.","Close. Spelling matters.","Bold. Wrong.","That button has a family.","Error 404: skill not found.","The menu will remember this.","Read it again. But faster.","Nope. Legacy trap.","The decoys are winning."];
 const RANKS=[[0,"MENU TOURIST"],[600,"SUBMENU SQUIRE"],[1600,"DROPDOWN DISCIPLE"],[3200,"TOGGLE KNIGHT"],[6000,"SETTINGS SAGE"],[10000,"ARCHMAGE OF PREFERENCES"],[16000,"THE MENU ITSELF"],[30000,"MENU DEITY"],[50000,"BEYOND MENUS"]];
 /* every final action does something to the game. d = tasks it lasts (99 = rest of run) */
-const FXLABEL={vol11:'VOL 11',dark:'DARK MODE',grey:'NO FUN',quiet:'MUTED',invert:'TOGGLED',chaos2:'2× CHAOS',terms:'TERMS DUE',silent:'NO POINTY',turbo:'TURBO',nochaos:'NO CHAOS',bright:'MAX BRIGHT',hue:'VIBES',comic:'COMIC SANS',settings:'ALL SETTINGS',update:'UPDATE DUE',toaster:'TOASTER',jet:'JET FAN',sun:'SUN',scream:'SCREAMING',haunt:'HAUNTED',float:'NO GRAVITY',sort:'SORTED',small:'DESKTOP SITE',void:'HIDDEN',noback:'NO BACK',pigeon:'PIGEON',fed:'FED MENU',skip:'SKIP INTRO'};
+const FXLABEL={vol11:'VOL 11',dark:'DARK MODE',grey:'NO FUN',quiet:'MUTED',invert:'TOGGLED',chaos2:'2× CHAOS',terms:'TERMS DUE',silent:'NO POINTY',turbo:'TURBO',nochaos:'NO CHAOS',bright:'MAX BRIGHT',hue:'VIBES',comic:'COMIC SANS',settings:'ALL SETTINGS',update:'UPDATE DUE',toaster:'TOASTER',jet:'JET FAN',sun:'SUN',scream:'SCREAMING',haunt:'HAUNTED',float:'NO GRAVITY',sort:'SORTED',small:'DESKTOP SITE',void:'HIDDEN',noback:'NO BACK',pigeon:'PIGEON',fed:'FED MENU',skip:'SKIP INTRO',warm:'NIGHT LIGHT',big:'LARGE TEXT'};
 const addTime=s=>{S.time=Math.min(S.maxTime,S.time+s)};
 const FX={
 "Set Volume to 11":{k:'vol11',d:99,m:'VOLUME IS NOW 11. FOR THE REST OF THE RUN.'},
@@ -500,7 +564,17 @@ const FX={
 "Empty the Bin":{k:'noback',d:99,m:'BIN EMPTIED. EVERY BACK BUTTON DELETED FOR THIS RUN.'},
 "Timezone: Vibes":{k:'hue',d:1,m:'TIMEZONE: VIBES. IT IS NOW PURPLE O\'CLOCK.'},
 "Approve Pigeon":{k:'pigeon',d:2,m:'PIGEON APPROVED. IT NOW SENDS YOUR TICKETS.'},
-"Feed the Menu":{k:'fed',d:2,m:'MENU FED. IT GREW AN EXTRA DECOY.'}
+"Feed the Menu":{k:'fed',d:2,m:'MENU FED. IT GREW AN EXTRA DECOY.'},
+"Enable Night Light":{k:'warm',d:2,m:'NIGHT LIGHT ON. EVERYTHING IS TEA-COLOURED.'},
+"Reverse Scroll Direction":{m:'SCROLLING REVERSED. SO IS THE NEXT MENU.',run:()=>{S.layout='upside'}},
+"Enable Large Text":{k:'big',d:2,m:'LARGE TEXT ENABLED. MENUS NOW SHOUT.'},
+"Install Fonts":{k:'comic',d:1,m:'1 FONT INSTALLED. IT WAS COMIC SANS.'},
+"Clear Notifications":{m:'47 NOTIFICATIONS CLEARED. +150 POINTS.',run:()=>{S.score+=150}},
+"Defragment Menus":{m:'MENUS DEFRAGMENTED. +2s.',run:()=>addTime(2)},
+"Reboot Router":{k:'quiet',d:1,m:'ROUTER REBOOTING. NO NOTIFICATIONS FOR A BIT.'},
+"Summon Drawing Room":{m:'A DOOR APPEARS. THE DRAWING ROOM AWAITS.',run:()=>{S.forceRoom=true}},
+"Find Ink Ribbon":{m:'YOU FOUND AN INK RIBBON. +1 RIBBON.',run:()=>{P.ribbons++;save()}},
+"Enable Captions":{m:'CAPTIONS ENABLED: [UPBEAT MENU MUSIC]. +1s.',run:()=>addTime(1)}
 };
 function applyLeaf(name){const e=FX[name];if(!e)return '';
   if(e.clear){S.fx={};S.fridgeName=null;S.nanMuted=false}
@@ -508,8 +582,8 @@ function applyLeaf(name){const e=FX[name];if(!e)return '';
   if(e.once)S.onceFx=e.once;
   const r=e.run?e.run():null;return (typeof r==='string'?r:e.m)||''}
 function applyFx(){const f=S.fx,b=document.body;
-  ['comic','dark','hue','haunt','float','jet','small'].forEach(k=>b.classList.toggle('fx-'+k,!!f[k]&&S.running));
-  const fl=[];if(f.grey)fl.push('grayscale(1)');if(f.invert)fl.push('hue-rotate(180deg)');if(f.bright)fl.push('brightness(1.15) saturate(1.3)');if(f.sun)fl.push('brightness(1.25) contrast(.85) sepia(.3)');
+  ['comic','dark','hue','haunt','float','jet','small','big'].forEach(k=>b.classList.toggle('fx-'+k,!!f[k]&&S.running));
+  const fl=[];if(f.grey)fl.push('grayscale(1)');if(f.invert)fl.push('hue-rotate(180deg)');if(f.bright)fl.push('brightness(1.15) saturate(1.3)');if(f.sun)fl.push('brightness(1.25) contrast(.85) sepia(.3)');if(f.warm)fl.push('sepia(.55) saturate(1.2)');
   $('#app').style.filter=S.running&&fl.length?fl.join(' '):'';
   $('#fxline').textContent=S.running?Object.keys(f).filter(k=>FXLABEL[k]).map(k=>'● '+FXLABEL[k]+(f[k]>=99?'':' ('+f[k]+')')).join('  '):''}
 function who(){if(S.fx.toaster)return 'THE TOASTER';if(S.fx.pigeon)return 'A PIGEON';const w=pick(WHO);
@@ -589,11 +663,11 @@ const BOX_COST=150;
 /* ---------- PERSISTENT ---------- */
 const P={best:store.get('ms26-best',0),col:store.get('ms26-col',{}),bucks:store.get('ms26-bucks',null),menus:store.get('ms26-menus',0),runs:store.get('ms26-runs',0)};
 if(P.bucks===null){P.bucks=BOX_COST;store.set('ms26-bucks',P.bucks);P.welcome=true}
-P.pity=store.get('ms26-pity',0);
+P.pity=store.get('ms26-pity',0);P.ribbons=store.get('ms26-ribbons',3);P.save=store.get('ms26-save',null);
 {let recalled=0;Object.keys(P.col).forEach(n=>{if(!ITEM[n]){recalled+=P.col[n];delete P.col[n]}});
  if(recalled){P.bucks+=recalled*30;store.set('ms26-col',P.col);store.set('ms26-bucks',P.bucks);P.notice=`OLD COLLECTABLES RECALLED FOR NOT BEING MENUS. +${recalled*30} MB`}}
 {const today=new Date().toDateString();if(store.get('ms26-day','')!==today){store.set('ms26-day',today);if(!P.welcome){P.bucks+=50;store.set('ms26-bucks',P.bucks);P.daily=true}}}
-function save(){store.set('ms26-best',P.best);store.set('ms26-col',P.col);store.set('ms26-bucks',P.bucks);store.set('ms26-menus',P.menus);store.set('ms26-runs',P.runs);store.set('ms26-pity',P.pity)}
+function save(){store.set('ms26-best',P.best);store.set('ms26-col',P.col);store.set('ms26-bucks',P.bucks);store.set('ms26-menus',P.menus);store.set('ms26-runs',P.runs);store.set('ms26-pity',P.pity);store.set('ms26-ribbons',P.ribbons);store.set('ms26-save',P.save)}
 const ownedCount=()=>ITEMS.filter(i=>P.col[i[0]]>0).length;
 const has=k=>ITEMS.some(i=>i[3]===k&&P.col[i[0]]>0);
 function rollItem(boost,pity){
@@ -714,7 +788,127 @@ function hud(){const fr=frenzy();$('#score').textContent=String(S.score).padStar
   document.body.classList.toggle('frenzy',fr&&S.running)}
 function setMute(m){muted=m;store.set('ms26-muted',m);$('#mute').textContent=m?'SND OFF':'SND ON'}
 function mk(label,cls,fn){const b=document.createElement('button');b.type='button';b.className='btn '+(cls||'');b.textContent=label;b.addEventListener('click',fn);return b}
-function showOnly(id){['#title','#over','#inter','#modal','#coll','#box'].forEach(s=>{$(s).hidden=s!==id})}
+function showOnly(id){['#title','#over','#inter','#modal','#coll','#box','#room'].forEach(s=>{$(s).hidden=s!==id})}
+
+/* ---------- INTERACTIVE WIDGET STEPS ---------- */
+const FINAL_W=['toggles','slider','stepper','cookies','country','keyboard'],GATE_W=['captcha','popups','hold','keyboard'];
+const TOG=["Dark Mode","Notifications","Wi-Fi","Bluetooth","Autoplay","Vibes","Telemetry","Fun","Haunting","Turbo","Location","Sarcasm","Gravity","Pigeons"];
+const COUNTRIES=["Argentina","Australia","Belgium","Brazil","Canada","Chile","Denmark","Egypt","Finland","France","Germany","Greece","Iceland","India","Ireland","Italy","Japan","Kenya","Mexico","Netherlands","New Zealand","Norway","Peru","Portugal","Spain","Sweden","United Kingdom","Uruguay","Atlantis","The Moon","Menu Island","Sealand"];
+const WBAD=["Not quite. The menu is disappointed.","Close. Close doesn't count.","That's not what the ticket said.","Wrong settings. Very wrong."];
+function makeWidget(type,ctx){const title=String(ctx||'SETTINGS').toUpperCase();
+  if(type==='toggles'){const labels=shuffle(TOG.slice()).slice(0,3+(Math.random()<.5?1:0));const target=labels.map(()=>Math.random()<.5);const init=target.map(x=>Math.random()<.5?x:!x);if(init.every((v,i)=>v===target[i]))init[0]=!init[0];return{type,title,crumb:`Set ${labels.length} Toggles`,labels,target,init}}
+  if(type==='slider'){const what=pick(['Volume','Brightness','Vibes','Spiciness','Sarcasm','Chaos','Bass']);const v=2+Math.floor(Math.random()*17);return{type,title,crumb:`${what} = ${v}`,what,v}}
+  if(type==='stepper'){const what=pick(['Font Size','Snooze Minutes','Menu Depth','Pigeons','Tabs Open']);const v=10+Math.floor(Math.random()*30);let s0=Math.floor(Math.random()*50);if(s0===v)s0+=7;return{type,title,crumb:`${what}: ${v}`,what,v,s0}}
+  if(type==='cookies'){const ess=shuffle(["Essential Session Cookie","Essential Login Cookie","Strictly Necessary Biscuit","Essential Crumb"]).slice(0,2+(Math.random()<.5?1:0));
+    const rest=shuffle(["Marketing Cookie","Tracking Cookie (Friendly)","Partner Cookie ×812","Analytics Cookie","Personalised Ad Cookie","Fridge Telemetry Cookie","Fourth-Party Cookie"]).slice(0,6-ess.length);return{type,title:'COOKIES',crumb:'Essential Cookies Only',items:shuffle(ess.concat(rest)),ess}}
+  if(type==='country'){const target=pick(["United Kingdom","France","Japan","Peru","Canada","Iceland","Kenya","Norway"]);const list=COUNTRIES.filter(c=>c!==target);const fakes=new Set();let g=0;while(fakes.size<2&&g++<50){const f=typo(target);if(f!==target&&!list.includes(f))fakes.add(f)}
+    return{type,title:'REGION',crumb:`Country: ${target}`,target,list:list.concat([target],[...fakes]).sort((a,b)=>a.localeCompare(b))}}
+  if(type==='keyboard'){const word=pick(['DELETE','CONFIRM','AGREE','MENU','YES','UNDO','RESET','SAVE','RIBBON']);return{type,title:'CONFIRMATION',crumb:`Type ${word}`,word}}
+  if(type==='captcha'){const tgt=pick(['Hamburger Icon','Kebab Menu','Meatballs Menu']);const others=['Hamburger Icon','Kebab Menu','Meatballs Menu','Generic Gear','Ticked Checkbox','Close X'].filter(n=>n!==tgt);
+    const k=2+Math.floor(Math.random()*3);const cells=shuffle(Array.from({length:9},(_,i)=>i<k?tgt:pick(others)));return{type,title:'SECURITY CHECK',crumb:'Verify Human',tgt,cells}}
+  if(type==='popups'){const n=3+Math.floor(Math.random()*3);return{type,title:'DESKTOP',crumb:`Close ${n} Popups`,n}}
+  return{type:'hold',title:'INSTALLER',crumb:'Hold: '+pick(['Install Update','Clear Cache','Charge Battery','Upload Vibes','Format Feelings'])}}
+function widgetDone(ok,el){
+  if(!S.running||S.paused||S.modal||S.loading)return false;
+  if(ok){S.combo++;S.ok++;S.maxCombo=Math.max(S.maxCombo,S.combo);const pts=Math.round(25*S.combo*mult());S.score+=pts;S.time=Math.min(S.maxTime,S.time+diff().gain*1.5);
+    floatAt(el,'+'+pts);burst(el,16);sfx.coin();say(pick(GOOD),'good',900);hud();advance()}
+  else{S.combo=has('crystal')?Math.floor(S.combo/2):0;S.bad++;S.time-=2;floatAt(el,'-2s',true);sfx.wrong();shake();say(pick(WBAD),'bad');hud()}
+  return true}
+function wbtn(label,cls,fn){const b=mk(label,cls,fn);return b}
+const WR={
+  toggles(w,box,q){q.innerHTML='Set exactly: '+w.labels.map((l,i)=>`<b>${l} ${w.target[i]?'ON':'OFF'}</b>`).join(' ');const st=w.init.slice();
+    w.labels.forEach((l,i)=>{const row=document.createElement('div');row.className='trow';const sp=document.createElement('span');sp.textContent=l;const sw=document.createElement('button');sw.type='button';sw.className='sw';sw.setAttribute('role','switch');sw.setAttribute('aria-label',l);sw.setAttribute('aria-checked',st[i]);
+      sw.onclick=()=>{st[i]=!st[i];sw.setAttribute('aria-checked',st[i]);sfx.nav()};row.append(sp,sw);box.appendChild(row)});
+    const ap=wbtn('APPLY','big prime',()=>widgetDone(st.every((v,i)=>v===w.target[i]),ap));box.appendChild(ap)},
+  slider(w,box,q){q.innerHTML=`Set <b>${w.what}</b> to exactly <b>${w.v}</b>.`;let v=w.v>10?Math.floor(Math.random()*5):15+Math.floor(Math.random()*5);
+    const val=document.createElement('div');val.className='bigval';val.textContent=v;const r=document.createElement('input');r.type='range';r.min=0;r.max=20;r.step=1;r.value=v;r.className='rng';r.id='wrng';r.setAttribute('aria-label',w.what);
+    r.oninput=()=>{v=+r.value;val.textContent=v;tone(300+v*40,.03,'square',.03)};const ap=wbtn('APPLY','big prime',()=>widgetDone(v===w.v,ap));box.append(val,r,ap)},
+  stepper(w,box,q){q.innerHTML=`Set <b>${w.what}</b> to <b>${w.v}</b>. There is no keyboard. There is only the stepper.`;let v=w.s0;const val=document.createElement('div');val.className='bigval';val.textContent=v;
+    const st=document.createElement('div');st.className='steps';[-5,-1,1,5].forEach(d=>st.appendChild(mk((d>0?'+':'−')+Math.abs(d),'big',()=>{v=Math.max(0,v+d);val.textContent=v;sfx.nav()})));
+    const ap=wbtn('APPLY','big prime',()=>widgetDone(v===w.v,ap));box.append(val,st,ap)},
+  cookies(w,box,q){q.innerHTML='We pre-ticked everything for you. Untick all but the <b>essential</b> cookies.';const on=new Set(w.items);
+    w.items.forEach(n=>{const b=document.createElement('button');b.type='button';b.className='ck';b.innerHTML='<i>✓</i><span></span>';b.querySelector('span').textContent=n;b.setAttribute('aria-pressed','true');
+      b.onclick=()=>{if(on.has(n))on.delete(n);else on.add(n);b.querySelector('i').textContent=on.has(n)?'✓':'';b.setAttribute('aria-pressed',on.has(n));sfx.nav()};box.appendChild(b)});
+    const ap=wbtn('SAVE PREFERENCES','big prime',()=>widgetDone(on.size===w.ess.length&&w.ess.every(e=>on.has(e)),ap));box.appendChild(ap)},
+  country(w,box,q){q.innerHTML=`Select your country: <b>${w.target}</b>`;const l=document.createElement('div');l.className='clist';
+    w.list.forEach(c=>{const b=document.createElement('button');b.type='button';b.textContent=c;b.onclick=()=>widgetDone(c===w.target,b);l.appendChild(b)});box.appendChild(l);l.scrollTop=0},
+  keyboard(w,box,q){q.innerHTML=`Type <b>${w.word}</b> to confirm. Autocorrect is on. Sorry.`;let typed='';const f=document.createElement('div');f.className='kfield';f.textContent='_';
+    const letters=[...new Set(w.word)];const pool='ABCDEFGHIJKLMNOPRSTUVWY'.split('').filter(c=>!letters.includes(c));while(letters.length<9)letters.push(pool.splice(Math.floor(Math.random()*pool.length),1)[0]);
+    const k=document.createElement('div');k.className='keys';
+    shuffle(letters).forEach(ch=>k.appendChild(mk(ch,'',()=>{if(typed.length>=w.word.length)return;typed+=ch;f.textContent=typed;tone(1500,.02,'square',.04);
+      if(typed.length===w.word.length){const ok=typed===w.word;if(!widgetDone(ok,f))return;if(!ok){typed='';f.textContent='_'}}})));
+    k.appendChild(mk('⌫','',()=>{typed=typed.slice(0,-1);f.textContent=typed||'_';sfx.nav()}));box.append(f,k)},
+  captcha(w,box,q){q.innerHTML=`Select all squares with a <b>${w.tgt}</b>.`;const sel=new Set();const g=document.createElement('div');g.className='cgrid';
+    w.cells.forEach((n,i)=>{const b=document.createElement('button');b.type='button';b.setAttribute('aria-pressed','false');b.setAttribute('aria-label',n);const c=document.createElement('canvas');drawItem(c,n,false);b.appendChild(c);
+      b.onclick=()=>{if(sel.has(i))sel.delete(i);else sel.add(i);b.setAttribute('aria-pressed',sel.has(i));sfx.nav()};g.appendChild(b)});
+    const ap=wbtn('VERIFY','big prime',()=>widgetDone(w.cells.every((n,i)=>(n===w.tgt)===sel.has(i)),ap));box.append(g,ap)},
+  popups(w,box,q){q.innerHTML=`Close all the popups. Use the <b>tiny X</b>. Trust no big buttons.`;const desk=document.createElement('div');desk.className='desk';box.appendChild(desk);let left=0;const id=S.menuId;
+    const ADS=['You won a free menu!','Update available (47 GB)','Rate us ★★★★★','Hot new menus near you','Your PC is fine. Click to fix.','Subscribe for more popups'];
+    const spawn=()=>{left++;const p=document.createElement('div');p.className='pop';const W=desk.clientWidth||300,H=desk.clientHeight||270;p.style.left=Math.floor(Math.random()*Math.max(1,W-160))+'px';p.style.top=Math.floor(Math.random()*Math.max(1,H-100))+'px';
+      p.innerHTML='<div class="pt"><span>POPUP</span><button type="button" aria-label="Close popup">X</button></div><div class="pb"><span></span></div>';p.querySelector('.pb span').textContent=pick(ADS);
+      const big=mk(pick(['CLOSE','NO THANKS','DISMISS']),'',()=>{if(id!==S.menuId)return;sfx.pop();toast('THAT WAS AN AD. HAVE ANOTHER POPUP.');spawn()});p.querySelector('.pb').appendChild(big);
+      p.querySelector('.pt button').onclick=()=>{if(id!==S.menuId||S.modal)return;p.remove();left--;sfx.nav();if(left<=0)widgetDone(true,desk)};desk.appendChild(p)};
+    requestAnimationFrame(()=>{for(let i=0;i<w.n;i++)spawn()})},
+  hold(w,box,q){q.innerHTML=`Press and <b>hold</b> to ${w.crumb.slice(6).toLowerCase()}. Letting go restarts it. Obviously.`;const bar=document.createElement('div');bar.className='holdbar';const fill=document.createElement('i');bar.appendChild(fill);
+    const b=mk('HOLD ME','big prime holdbtn',()=>{});let t0=0,raf=0,done=false;const id=S.menuId;
+    const tick=now=>{if(!t0||done||id!==S.menuId)return;const p=Math.min(1,(now-t0)/1600);fill.style.width=(p*100)+'%';if(p>=1){done=true;widgetDone(true,b)}else raf=requestAnimationFrame(tick)};
+    const start=e=>{if(e)e.preventDefault();if(done||t0||!S.running||S.paused||S.modal)return;t0=performance.now();b.textContent='INSTALLING…';sfx.nav();raf=requestAnimationFrame(tick)};
+    const stop=()=>{if(!t0||done)return;t0=0;cancelAnimationFrame(raf);fill.style.width='0';b.textContent='HOLD ME';say('Interrupted. Restarting from 0%. As is tradition.','bad')};
+    b.addEventListener('pointerdown',start);['pointerup','pointercancel','pointerleave'].forEach(ev=>b.addEventListener(ev,stop));b.oncontextmenu=e=>e.preventDefault();
+    b.addEventListener('keydown',e=>{if((e.key===' '||e.key==='Enter')&&!e.repeat)start(e)});b.addEventListener('keyup',e=>{if(e.key===' '||e.key==='Enter')stop()});box.append(bar,b)}
+};
+function renderWidget(w){
+  $('#wtitle').textContent=S.fx.settings?'SETTINGS':w.title;$('#depth').textContent='D'+(S.step+1);
+  const list=$('#list');list.className='list';list.innerHTML='';const box=document.createElement('div');box.className='widget';const q=document.createElement('p');q.className='wq';box.appendChild(q);list.appendChild(box);
+  WR[w.type](w,box,q);renderGoal();
+}
+
+/* ---------- THE DRAWING ROOM ---------- */
+const BAR=3.2,PROG=[[57,60,64],[53,57,60],[48,52,55],[55,59,62]],mf=m=>440*Math.pow(2,(m-69)/12);
+const Music={on:false,
+  start(){if(muted||this.on)return;const a=audio();if(!a)return;this.on=true;const g=a.createGain();g.gain.setValueAtTime(.0001,a.currentTime);g.gain.exponentialRampToValueAtTime(.6,a.currentTime+2.5);
+    const lp=a.createBiquadFilter();lp.type='lowpass';lp.frequency.value=1600;g.connect(lp).connect(a.destination);this.g=g;this.t=a.currentTime+.2;this.bar=0;this.loop()},
+  loop(){if(!this.on)return;while(this.t<ac.currentTime+1.6){this.playBar(this.t,this.bar++);this.t+=BAR}this.tm=setTimeout(()=>this.loop(),400)},
+  note(f,t,dur,vol,type){const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(vol,t+Math.min(.7,dur*.3));g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g).connect(this.g);o.start(t);o.stop(t+dur+.05)},
+  playBar(t,i){const ch=PROG[i%PROG.length];ch.forEach(m=>this.note(mf(m),t,BAR+.8,.03,'triangle'));this.note(mf(ch[0]-12),t,BAR,.045,'sine');
+    for(let k=0;k<8;k++){if(Math.random()<.3)continue;this.note(mf(ch[(k+i)%ch.length]+12+(k%4===3?12:0)),t+k*BAR/8,1.6,.02,'sine')}},
+  stop(){if(!this.on)return;this.on=false;clearTimeout(this.tm);const g=this.g;try{g.gain.cancelScheduledValues(ac.currentTime);g.gain.setValueAtTime(Math.max(.0001,g.gain.value),ac.currentTime);g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+1.2)}catch(e){}setTimeout(()=>{try{g.disconnect()}catch(e){}},1500)}
+};
+function clack(n=6){for(let i=0;i<n;i++){tone(1700+Math.random()*300,.02,'square',.04,i*.08);}tone(2093,.7,'triangle',.05,n*.08+.05)}
+function drawRoom(){const cv=$('#roomcv'),c=cv.getContext('2d');const r=(x,y,w,h,col)=>{c.fillStyle=col;c.fillRect(x,y,w,h)};
+  r(0,0,160,100,'#2b3a28');for(let x=0;x<160;x+=6)r(x,0,2,52,'#314330');r(0,50,160,12,'#4a2f1f');r(0,50,160,2,'#7a5233');
+  r(0,62,160,38,'#3a2416');for(let y=66;y<100;y+=7)r(0,y,160,1,'#2c1b10');for(let y=62,o=0;y<100;y+=7,o=(o+23)%40)for(let x=o;x<160;x+=40)r(x,y,1,7,'#2c1b10');
+  r(46,72,70,22,'#a8743a');r(48,74,66,18,'#6b1f2a');r(52,78,58,10,'#7d2a35');
+  r(62,10,36,26,'#a8743a');r(64,12,32,22,'#3b5f7a');r(64,26,32,8,'#3a5a2a');r(70,22,10,6,'#4a7a3a');r(84,20,8,6,'#3f6a30');r(88,15,4,4,'#efe6cf');
+  r(124,16,22,46,'#2c1b10');r(126,18,18,44,'#4a2f1f');r(128,21,14,16,'#5a3a26');r(128,40,14,18,'#5a3a26');r(140,40,2,3,'#d6b26a');
+  r(10,54,50,4,'#5a3a22');r(10,58,50,2,'#3a2416');r(12,60,3,16,'#3a2416');r(55,60,3,16,'#3a2416');
+  r(20,44,24,10,'#2b2b2b');r(22,38,20,7,'#efe6cf');r(24,40,14,1,'#9a917c');r(24,42,10,1,'#9a917c');for(let i=0;i<5;i++)r(22+i*4,50,2,2,'#bdbdbd');r(18,46,2,4,'#2b2b2b');r(44,46,3,3,'#bdbdbd');
+  c.fillStyle='rgba(255,210,120,.12)';c.beginPath();c.arc(52,38,20,0,Math.PI*2);c.fill();c.fillStyle='rgba(255,210,120,.12)';c.beginPath();c.arc(52,38,11,0,Math.PI*2);c.fill();
+  r(51,40,2,14,'#2b2b2b');r(47,52,10,2,'#2b2b2b');r(46,32,12,8,'#d9b45a');r(47,33,10,1,'#f0d48a');
+  r(96,64,28,16,'#6b4429');r(96,64,28,3,'#7a5233');r(96,70,28,2,'#a8743a');r(108,68,4,5,'#ffd21f');r(98,78,3,2,'#2c1b10');r(119,78,3,2,'#2c1b10');
+  r(148,58,10,10,'#8a4b2a');r(147,58,12,2,'#a85e36');[[152,40,2,18],[148,44,4,3],[154,46,4,3],[146,50,5,3],[155,52,4,3],[150,36,3,5],[156,40,3,4]].forEach(([x,y,w,h])=>r(x,y,w,h,'#2a8a45'));r(151,42,2,2,'#3ddc6e');r(155,47,2,1,'#3ddc6e');
+  SPR.forEach((row,y)=>[...row].forEach((ch,x)=>{if(ch==='.')return;r(76+x,66+y,1,1,ch==='K'?'#0d0d16':ch==='W'?'#f5f2e6':'#0d0d16')}));
+  const g=c.createRadialGradient(80,55,30,80,55,110);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.55)');c.fillStyle=g;c.fillRect(0,0,160,100)}
+let roomCb=null,roomFound=false,msgTok=0;
+function typeMsg(t){const el=$('#rmsg'),tok=++msgTok;let i=0;el.textContent='';const step=()=>{if(tok!==msgTok)return;i+=2;el.textContent=t.slice(0,i);if(i<t.length)setTimeout(step,28)};step()}
+function roomStat(){$('#rstat').textContent=`INK RIBBONS ×${P.ribbons} · ${P.save?'SAVED AT LV '+(P.save.level+1):'NO SAVE'} · NEXT: LV ${S.level+1}`}
+function roomMenu(){const a=$('#ract');a.innerHTML='';a.append(mk('TYPEWRITER','big',useTypewriter),mk('ITEM BOX','big',itemBox),mk('EXAMINE','big',examine),mk('LEAVE ROOM ▸','big',leaveRoom))}
+function updRsnd(){$('#rsnd').textContent='MUSIC: '+(muted?'OFF':'ON')}
+const EXAMINE=["A painting of hills. Not a single menu in it. Bliss.","The lamp is on. It has no settings. It never will.","The rug has no options. The rug is free.","A plant. It photosynthesises without a single toggle.","The item box is heavy. It contains no submenus, which is suspicious.","A note on the desk: 'Do not open Miscellaneous.' The handwriting is yours.","The door leads back to the menus. It is patient.","Calm music is coming from nowhere. You decide that's fine."];
+function enterRoom(cb){roomCb=cb;roomFound=false;S.paused=true;S.inRoom=true;showOnly('#room');drawRoom();roomStat();roomMenu();updRsnd();
+  typeMsg('A quiet room. A typewriter sits on the desk. For once, nothing asks if you are sure.');Music.start()}
+function useTypewriter(){clack(3);if(P.ribbons<=0){typeMsg('You have no Ink Ribbons. The typewriter judges you silently.');return}
+  typeMsg(`Will you use an Ink Ribbon to save your progress? (You have ${P.ribbons}.)`);const a=$('#ract');a.innerHTML='';
+  a.append(mk('YES','big',()=>{P.ribbons--;P.save={score:S.score,level:S.level,maxCombo:S.maxCombo,ok:S.ok,bad:S.bad,fx:Object.assign({},S.fx),fridgeName:S.fridgeName,nanMuted:S.nanMuted,runMenus:S.runMenus,maxTime:S.maxTime,insane:S.insane};save();clack(9);
+    typeMsg('Progress saved. The menus will wait for you.');roomStat();roomMenu()}),mk('NO','big',()=>{typeMsg('You decide not to. A bold choice.');roomMenu()}))}
+function itemBox(){sfx.nav();typeMsg(`ITEM BOX: Ink Ribbon ×${P.ribbons}. Menu Bucks ${fmt(P.bucks)}. Collectables ${ownedCount()}/${ITEMS.length}. One Back Button (broken).`)}
+function examine(){if(!roomFound){roomFound=true;const x=Math.random();
+    if(x<.4){P.ribbons++;save();roomStat();sfx.coin();return typeMsg('You found an INK RIBBON in the desk drawer.')}
+    if(x<.75){S.time=Math.min(S.maxTime,S.time+5);hud();sfx.coin();return typeMsg('You found a GREEN TOGGLE behind the plant. You flip it. Time +5s.')}}
+  sfx.nav();typeMsg(pick(EXAMINE))}
+function leaveRoom(){$('#ract').innerHTML='';Music.stop();tone(90,1.1,'sawtooth',.025,0,55);noise(.8,.015);
+  const d=$('#door');$('#dtext').textContent=`MENU ${S.level+1}`;d.hidden=false;requestAnimationFrame(()=>requestAnimationFrame(()=>d.classList.add('on')));
+  setTimeout(()=>{showOnly(null);S.inRoom=false;d.classList.remove('on');setTimeout(()=>{d.hidden=true},1100);const cb=roomCb;roomCb=null;cb&&cb()},1700)}
 
 /* ---------- GAME FLOW ---------- */
 function newTask(){
@@ -722,7 +916,12 @@ function newTask(){
   const len=S.mega?Math.min(d.len+4,12):d.len;
   const path=[pick(ROOT)],mids=shuffle(MID.slice());
   for(let i=0;i<len-2;i++)path.push(mids[i]);
-  path.push(pick(LEAF));S.path=path;S.step=0;
+  path.push(pick(LEAF));S.widgets={};
+  const lv=S.level+(S.insane?5:0);
+  if(lv>=1&&Math.random()<Math.min(.3+lv*.04,.6)){const w=makeWidget(pick(FINAL_W),path[path.length-2]);path[path.length-1]=w.crumb;S.widgets[path.length-1]=w}
+  if(lv>=2&&path.length>2&&Math.random()<Math.min(.15+lv*.02,.35)){const at=1+Math.floor(Math.random()*(path.length-2));const w=makeWidget(pick(GATE_W),path[at-1]);path.splice(at,0,w.crumb);
+    const nw={};Object.keys(S.widgets).forEach(k=>{nw[+k>=at?+k+1:+k]=S.widgets[k]});nw[at]=w;S.widgets=nw}
+  S.path=path;S.step=0;
   $('#goal').classList.toggle('mega',S.mega);
   $('#ticket').textContent=S.mega?`★ MEGA TICKET · ${who()} · 3× BONUS`:`#${1000+Math.floor(Math.random()*9000)} · ${who()} · ${pick(URG)}`;
   if(S.mega){toast('★ MEGA TICKET ★ 12 MENUS DEEP. GUARANTEED LOOT.');sfx.mega()}
@@ -738,6 +937,7 @@ function buildOptions(d){
   const correct=S.path[S.step],pool=S.step===0?ROOT:S.step===S.path.length-1?LEAF:MID;
   const out=[correct],seen=new Set([correct.toLowerCase()]);let g=0;
   if(S.step>0&&!S.fx.noback&&Math.random()<.3){out.push(BACK);seen.add('back')}
+  const sg=SYN.find(g=>g.includes(correct));if(sg&&Math.random()<.7)shuffle(sg.filter(x=>x!==correct)).slice(0,2).forEach(x=>{if(out.length<d.n&&!seen.has(x.toLowerCase())&&!S.path.includes(x)){out.push(x);seen.add(x.toLowerCase())}});
   while(out.length<d.n&&g++<300){const c=Math.random()<d.typo?typo(correct):pick(pool);if(!seen.has(c.toLowerCase())&&!S.path.includes(c)){seen.add(c.toLowerCase());out.push(c)}}
   return S.fx.sort?out.sort((a,b)=>a.localeCompare(b)):shuffle(out);
 }
@@ -755,6 +955,7 @@ function itemBtn(i){const o=S.opts[i];const b=document.createElement('button');b
 function sysBtn(label,fn){const b=document.createElement('button');b.type='button';b.className='btn item sys';b.innerHTML='<span class="lbl"></span><kbd>…</kbd>';b.querySelector('.lbl').textContent=label;
   b.addEventListener('click',()=>{if(!S.running||S.paused||S.modal||S.loading)return;sfx.nav();fn()});return b}
 function renderMenu(keep){
+  const W=S.widgets&&S.widgets[S.step];if(W){if(keep)return;S.cur='';S.layout='';S.menuId++;S.runMenus++;return renderWidget(W)}
   if(!keep){S.opts=buildOptions(diff());S.cur=S.layout;S.layout='';S.page=0;S.dropOpen=false;S.menuId++;S.runMenus++;
     if(S.cur==='drift'){const id=S.menuId;const iv=setInterval(()=>{if(id!==S.menuId||!S.running){clearInterval(iv);return}if(S.paused||S.modal)return;shuffle(S.opts);renderMenu(true)},850)}}
   $('#wtitle').textContent=S.fx.settings?'SETTINGS':S.step===0?'MAIN MENU':S.path[S.step-1].toUpperCase();
@@ -813,9 +1014,11 @@ function completeTask(){
   S.paused=true;const tok=++S.token;
   const dropChance=.3+(has('luck')?.1:0);let item=null,isNew=false;
   if(S.mega||Math.random()<dropChance){item=rollItem(S.mega);isNew=grant(item);S.runItems.push(item)}
+  const ribbon=Math.random()<.15;if(ribbon){P.ribbons++;save()}
+  const roomNext=S.level%4===0||S.forceRoom;
   if(S.level%5===0)S.pendingFrenzy=true;
   $('#ititle').textContent=S.mega?'MEGA TICKET CLEARED':'TASK COMPLETE';
-  $('#ibonus').textContent=`+${fmt(bonus)} BONUS · LEVEL ${S.level+1}${S.pendingFrenzy?' · FRENZY INCOMING':''}`;
+  $('#ibonus').textContent=`+${fmt(bonus)} BONUS · LEVEL ${S.level+1}${ribbon?' · +1 INK RIBBON':''}${roomNext?' · A SAFE ROOM IS NEAR':''}${S.pendingFrenzy?' · FRENZY INCOMING':''}`;
   $('#ifx').textContent=leafMsg?'▸ '+S.path[S.path.length-1].toUpperCase()+': '+leafMsg:'';
   const dr=$('#idrop');dr.innerHTML='';
   if(item){const cd=document.createElement('div');cd.className='card';fillCard(cd,item,P.col[item]);cd.querySelector('.rar').textContent=(isNew?'NEW! ':'DUPLICATE · ')+RNAME[ITEM[item].r];dr.appendChild(cd);setTimeout(()=>sfx.rarity(ITEM[item].r),350)}
@@ -824,7 +1027,8 @@ function completeTask(){
   const ms=skipIntro?0:item?3000:2400;
   const pr=$('#iprog');pr.style.transition='none';pr.style.width='0';$('#inter').hidden=false;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{pr.style.transition=`width ${ms/1000-.1}s steps(12)`;pr.style.width='100%'}));
-  const go=()=>{if(tok!==S.token||$('#inter').hidden)return;$('#inter').hidden=true;S.paused=false;S.lastT=performance.now();
+  const go=()=>{if(tok!==S.token||$('#inter').hidden)return;$('#inter').hidden=true;if(roomNext&&!S.inRoom){S.forceRoom=false;return enterRoom(()=>{if(tok===S.token)cont()})}cont()};
+  const cont=()=>{S.paused=false;S.lastT=performance.now();
     applyFx();
     if(S.onceFx){const c='fx-'+S.onceFx;S.onceFx=null;document.body.classList.add(c);sfx.shuffle();setTimeout(()=>document.body.classList.remove(c),1500)}
     if(S.snoozeNext){S.snoozeNext=false;S.snoozeUntil=performance.now()+4000;toast('SNOOZING… TIMER FROZEN 4s',true)}
@@ -841,27 +1045,31 @@ function loop(t){
   if(S.time<=0)return gameOver();
   requestAnimationFrame(loop);
 }
-function startGame(){
-  audio();sfx.start();
+function startGame(e){const fromSave=e===true&&!!P.save;
+  audio();sfx.start();Music.stop();
   S.maxTime=40+(has('timebar')?10:0);
   Object.assign(S,{running:true,paused:false,modal:false,loading:false,score:0,level:0,combo:0,maxCombo:0,time:(S.insane?22:25)+(has('chrono')?5:0),
-    ok:0,bad:0,layout:'',cur:'',lastSec:99,frenzyUntil:0,pendingFrenzy:false,runItems:[],runMenus:0,fx:{},onceFx:null,snoozeNext:false,snoozeUntil:0,fridgeName:null,nanMuted:false,forcedAt:-1});
+    ok:0,bad:0,layout:'',cur:'',lastSec:99,frenzyUntil:0,pendingFrenzy:false,runItems:[],runMenus:0,fx:{},onceFx:null,snoozeNext:false,snoozeUntil:0,fridgeName:null,nanMuted:false,forcedAt:-1,widgets:{},inRoom:false,forceRoom:false});
   S.token++;showOnly(null);
   const perks=ITEMS.filter(i=>i[3]&&P.col[i[0]]>0).length;
   say(S.insane?"INSANE MODE. I can't watch.":perks?`${perks} perk${perks>1?'s':''} active. Go.`:"Follow the objective. Trust nothing.",'ok');
+  if(fromSave){const sv=P.save;P.save=null;save();S.insane=!!sv.insane;S.maxTime=sv.maxTime||S.maxTime;
+    Object.assign(S,{score:sv.score,level:sv.level,maxCombo:sv.maxCombo,ok:sv.ok,bad:sv.bad,fx:sv.fx||{},fridgeName:sv.fridgeName,nanMuted:sv.nanMuted,runMenus:sv.runMenus||0});S.time=S.maxTime*.6;
+    setTimeout(()=>toast(`SAVE LOADED · LV ${S.level+1} · THE MENUS REMEMBER YOU`,true),300)}
   applyFx();newTask();hud();S.lastT=performance.now();requestAnimationFrame(loop);
 }
 function gameOver(){
-  S.running=false;S.token++;S.menuId++;S.time=0;S.frenzyUntil=0;hud();document.body.classList.remove('frenzy');sfx.over();
+  S.running=false;S.token++;S.menuId++;S.time=0;Music.stop();S.frenzyUntil=0;hud();document.body.classList.remove('frenzy');sfx.over();
   S.modal=false;S.loading=false;applyFx();
   const nb=S.score>P.best,gap=P.best-S.score;if(nb)P.best=S.score;
   const earned=Math.round((S.score/20+S.level*10)*(has('magnet')?1.25:1));
   P.bucks+=earned;P.menus+=S.runMenus;P.runs++;save();
   const acc=S.ok+S.bad?Math.round(100*S.ok/(S.ok+S.bad)):0;
   const rank=RANKS.filter(r=>S.score>=r[0]).pop()[1];
-  $('#ostats').innerHTML=`<dt>SCORE</dt><dd>${fmt(S.score)}${nb?' <span class="newbest">NEW BEST</span>':''}</dd><dt>BEST</dt><dd>${fmt(P.best)}</dd><dt>TASKS DONE</dt><dd>${S.level}</dd><dt>MENUS OPENED</dt><dd>${S.runMenus}</dd><dt>MAX COMBO</dt><dd>x${S.maxCombo}</dd><dt>ACCURACY</dt><dd>${acc}%</dd><dt>ITEMS FOUND</dt><dd>${S.runItems.length}</dd><dt>MENU BUCKS</dt><dd>+${fmt(earned)}</dd><dt class="rank">RANK: ${rank}</dt>`;
+  $('#ostats').innerHTML=`<dt>SCORE</dt><dd>${fmt(S.score)}${nb?' <span class="newbest">NEW BEST</span>':''}</dd><dt>BEST</dt><dd>${fmt(P.best)}</dd><dt>TASKS DONE</dt><dd>${S.level}</dd><dt>MENUS OPENED</dt><dd>${S.runMenus}</dd><dt>MAX COMBO</dt><dd>x${S.maxCombo}</dd><dt>ACCURACY</dt><dd>${acc}%</dd><dt>ITEMS FOUND</dt><dd>${S.runItems.length}</dd><dt>MENU BUCKS</dt><dd>+${fmt(earned)}</dd><dt>INK RIBBONS</dt><dd>${P.ribbons}</dd><dt class="rank">RANK: ${rank}</dt>`;
   $('#onear').textContent=nb?'A NEW RECORD. THE MENUS ARE NERVOUS.':gap>0&&gap<S.score*.25?`ONLY ${fmt(gap)} POINTS FROM YOUR BEST. SO CLOSE.`:P.bucks>=BOX_COST?`YOU CAN AFFORD A MENU BOX (${fmt(P.bucks)} MB).`:'YOU RAN OUT OF TIME. THE MENUS DID NOT.';
   $('#oquote').innerHTML='';const sm=document.createElement('small');const wi=Math.floor(Math.random()*WISDOM.length);sm.textContent=`PARTING PEARL #${wi+1}`;$('#oquote').append(sm,WISDOM[wi]);
+  const ol=$('#oload');ol.hidden=!P.save;if(P.save)ol.textContent=`▸ LOAD SAVE (LV ${P.save.level+1})`;$('#again').classList.toggle('prime',!P.save);
   showOnly('#over');say("We'll get them next time. The menus, I mean.",'bad',3000);
   setTimeout(()=>$('#again').focus({preventScroll:true}),50);
 }
@@ -1001,7 +1209,8 @@ function showRates(){openModal({title:'DROP RATES (LEGALLY REQUIRED)',body:`<tab
 
 /* ---------- TITLE MENU ---------- */
 function titleMain(){const m=$('#tmenu');m.innerHTML='';
-  m.append(mk('▸ START GAME','big prime',startGame),
+  if(P.save)m.append(mk(`▸ CONTINUE (SAVED LV ${P.save.level+1})`,'big prime',()=>startGame(true)));
+  m.append(mk('▸ START GAME','big'+(P.save?'':' prime'),startGame),
     mk(`COLLECTABLES ${ownedCount()}/${ITEMS.length}`,'big',()=>{sfx.nav();showColl('#title')}),
     mk(`MENU BOX · ${fmt(P.bucks)} MB`,'big',()=>{sfx.nav();P.welcome=false;showBox()}),
     mk('OPTIONS','big',()=>{sfx.nav();titleOpts()}),
@@ -1013,14 +1222,14 @@ function titleOpts(){const m=$('#tmenu');m.innerHTML='';
   const d=mk('DIFFICULTY: '+(S.insane?'INSANE':'NORMAL'),'big',()=>{S.insane=!S.insane;store.set('ms26-insane',S.insane);d.textContent='DIFFICULTY: '+(S.insane?'INSANE':'NORMAL');sfx.nav();if(S.insane)toast('INSANE: DEEPER MENUS, MORE CHAOS, 2× POINTS')});
   let depth=0;const o=mk('OPTIONS','big',()=>{depth++;sfx.nav();o.textContent='OPTIONS'+' ›'.repeat(Math.min(depth,6));toast(depth<5?'YOU ARE ALREADY IN OPTIONS. GOING DEEPER…':'THERE IS NOTHING DOWN HERE. EXCEPT YOU.')});
   m.append(s,d,o,mk('◄ BACK','big',()=>{sfx.nav();titleMain()}))}
-function showTitle(){S.running=false;S.token++;S.menuId++;S.modal=false;document.body.classList.remove('frenzy');applyFx();showOnly('#title');titleMain();cycleQuote()}
+function showTitle(){Music.stop();S.running=false;S.token++;S.menuId++;S.modal=false;document.body.classList.remove('frenzy');applyFx();showOnly('#title');titleMain();cycleQuote()}
 function cycleQuote(){const q=$('#tquote');q.innerHTML='';const sm=document.createElement('small');const qi=Math.floor(Math.random()*WISDOM.length);sm.textContent=`PEARL OF WISDOM #${qi+1}`;q.append(sm,WISDOM[qi])}
 setInterval(()=>{if(!$('#title').hidden)cycleQuote()},4500);
 
 /* ---------- WIRING ---------- */
-$('#mute').onclick=()=>{setMute(!muted);sfx.nav()};
+$('#mute').onclick=()=>{setMute(!muted);sfx.nav();if(muted)Music.stop()};
 $('#tbx').onclick=()=>{if(!S.running||S.paused||S.modal)return;S.time-=1;S.combo=0;sfx.wrong();shake();toast('THE X IS DECORATIVE. -1s');hud()};
-$('#again').onclick=startGame;
+$('#again').onclick=startGame;$('#oload').onclick=()=>startGame(true);$('#rsnd').onclick=()=>{setMute(!muted);updRsnd();if(muted)Music.stop();else if(S.inRoom)Music.start()};
 $('#tomenu').onclick=()=>{sfx.nav();showTitle()};
 $('#ocoll').onclick=()=>{sfx.nav();showColl('#over')};
 $('#cback').onclick=()=>{sfx.nav();if(collFrom==='#over')showOnly('#over');else showTitle()};
