@@ -1,0 +1,767 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1328a0">
+<meta name="description" content="Menu Simulator 2K26: a frantic pixel-art parody game about navigating absurd menus.">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style>
+<title>Menu Simulator 2K26</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=VT323&display=swap">
+<style>
+/* Layout: one-screen BIOS-setup parody — HUD, objective ticket, a bevelled menu window, mascot footer; overlays for chaos dialogs, collection and Menu Box */
+:root{
+  --bg:#1328a0; --bg2:#0a176b; --veil:rgba(7,12,64,.95); --frz:#4a1290;
+  --panel:#c4c2bc; --panel-hi:#f4f2ec; --panel-lo:#6a6862; --ink:#0d0d16;
+  --hi:#ffd21f; --good:#3ddc6e; --bad:#ff4238; --paper:#f5f2e6; --cyan:#62e2ff; --epic:#c86bff;
+  --f-display:"Silkscreen","Courier New",monospace;
+  --f-body:"VT323","Courier New",monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{height:100%}
+body{height:100%;margin:0;overflow:hidden;color:var(--paper);font-family:var(--f-body);font-size:22px;line-height:1.1;
+  background-color:var(--bg);
+  background-image:linear-gradient(var(--bg2) 2px,transparent 2px),linear-gradient(90deg,var(--bg2) 2px,transparent 2px);
+  background-size:32px 32px;animation:grid 5s linear infinite;
+  -webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+body.frenzy{animation:grid .7s linear infinite,frz .24s steps(1) infinite}
+@keyframes grid{to{background-position:32px 32px}}
+@keyframes frz{50%{background-color:var(--frz)}}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:200;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.14) 0 1px,transparent 1px 3px)}
+button{font:inherit;touch-action:manipulation}
+
+#app{height:100%;max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:9px;
+  padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+#app.shake{animation:shake .28s steps(2)}
+@keyframes shake{0%{transform:translate(0)}25%{transform:translate(-6px,2px)}50%{transform:translate(5px,-3px)}75%{transform:translate(-3px,1px)}}
+
+.hud{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-size:13px;letter-spacing:.04em;font-variant-numeric:tabular-nums}
+.hud b{color:var(--hi);font-weight:700}
+.hud .grow{flex:1}
+.combo{color:var(--cyan)}
+.combo.fr{color:var(--hi);animation:blink .25s steps(1) infinite}
+.combo.pump{animation:pump .25s}
+@keyframes pump{50%{transform:scale(1.5)}}
+.mute{background:var(--bg2);color:var(--paper);border:2px solid var(--ink);font-family:var(--f-display);font-size:12px;padding:4px 8px;cursor:pointer}
+
+.timebar{height:18px;border:2px solid var(--ink);background:var(--bg2);box-shadow:3px 3px 0 var(--ink)}
+.timebar i{display:block;height:100%;width:100%;background:repeating-linear-gradient(90deg,var(--good) 0 10px,transparent 10px 12px)}
+.timebar.low i{background:repeating-linear-gradient(90deg,var(--bad) 0 10px,transparent 10px 12px);animation:blink .4s steps(1) infinite}
+.timebar.fr i{background:repeating-linear-gradient(90deg,var(--hi) 0 10px,var(--epic) 10px 12px)}
+@keyframes blink{50%{opacity:.35}}
+
+.goal{background:var(--ink);border:2px solid var(--hi);padding:8px 10px;display:flex;flex-direction:column;gap:6px;box-shadow:3px 3px 0 var(--bg2)}
+.goal.mega{border-color:var(--epic);box-shadow:3px 3px 0 var(--epic)}
+.ticket{font-family:var(--f-display);font-size:10px;color:var(--cyan);letter-spacing:.06em;display:flex;justify-content:space-between;gap:8px}
+.goal.mega .ticket{color:var(--epic)}
+.crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:4px 2px;font-size:21px}
+.crumbs.dense{font-size:17px}
+.crumb{padding:0 5px;background:var(--bg2);color:var(--paper)}
+.crumb.done{background:var(--good);color:var(--ink)}
+.crumb.now{background:var(--hi);color:var(--ink);animation:blink .7s steps(1) infinite}
+.sep{color:var(--panel-lo)}
+
+.win{flex:1;min-height:0;display:flex;flex-direction:column;background:var(--panel);color:var(--ink);
+  box-shadow:inset -3px -3px 0 var(--panel-lo),inset 3px 3px 0 var(--panel-hi),0 0 0 2px var(--ink),6px 6px 0 var(--ink)}
+.titlebar{display:flex;align-items:center;gap:8px;background:var(--bg2);color:var(--hi);margin:3px 3px 0;padding:5px 6px 5px 8px;font-family:var(--f-display);font-size:12px;letter-spacing:.05em}
+.titlebar span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.depth{color:var(--cyan);font-size:10px;flex:none}
+.tb-x{background:var(--panel);color:var(--ink);border:0;width:22px;height:20px;font-family:var(--f-display);font-size:11px;cursor:pointer;
+  box-shadow:inset -2px -2px 0 var(--panel-lo),inset 2px 2px 0 var(--panel-hi)}
+.list{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:8px;padding:12px}
+.list.in .item{animation:slide .18s steps(3) both}
+.list.in .item:nth-child(2){animation-delay:.03s}.list.in .item:nth-child(3){animation-delay:.06s}
+.list.in .item:nth-child(4){animation-delay:.09s}.list.in .item:nth-child(5){animation-delay:.12s}.list.in .item:nth-child(n+6){animation-delay:.15s}
+@keyframes slide{from{transform:translateX(-24px);opacity:0}}
+.list.mirror{transform:scaleX(-1)}
+.list.upside{transform:rotate(180deg)}
+.list.tiny .btn{font-size:14px;padding:3px 6px}
+.list.tiny{gap:4px}
+
+.btn{display:flex;align-items:center;gap:10px;width:100%;border:0;background:var(--panel);color:var(--ink);font-family:var(--f-body);font-size:23px;
+  padding:7px 10px;text-align:left;cursor:pointer;
+  box-shadow:inset -3px -3px 0 var(--panel-lo),inset 3px 3px 0 var(--panel-hi),0 0 0 2px var(--ink)}
+.btn:hover{background:var(--hi)}
+.btn:active{box-shadow:inset 3px 3px 0 var(--panel-lo),inset -3px -3px 0 var(--panel-hi),0 0 0 2px var(--ink);transform:translate(1px,1px)}
+.btn:focus-visible,.mute:focus-visible,.tb-x:focus-visible,.tile:focus-visible{outline:3px solid var(--hi);outline-offset:3px}
+.btn:disabled{opacity:.45;cursor:not-allowed;background:var(--panel)}
+.btn .lbl{flex:1;min-width:0;overflow-wrap:anywhere}
+.btn kbd{font-family:var(--f-display);font-size:10px;color:var(--panel-lo)}
+.btn.ok{background:var(--good)}
+.btn.no{background:var(--bad);color:var(--paper)}
+.btn.big{font-family:var(--f-display);font-size:15px;justify-content:center;padding:12px}
+.btn.prime{background:var(--hi)}
+.btn.sys{background:var(--bg2);color:var(--hi)}
+.btn.sys kbd{color:var(--cyan)}
+
+.loading{margin:auto 0;display:flex;flex-direction:column;gap:8px;font-size:24px;text-align:center}
+.prog{height:20px;border:2px solid var(--ink);background:var(--paper)}
+.prog i{display:block;height:100%;width:0;background:repeating-linear-gradient(90deg,var(--bg) 0 8px,transparent 8px 10px)}
+
+.pointy{display:flex;align-items:flex-end;gap:10px;min-height:72px}
+.pointy canvas{image-rendering:pixelated;animation:bob 1s steps(2) infinite;flex:none}
+@keyframes bob{50%{transform:translateY(-3px)}}
+.bubble{flex:1;min-width:0;position:relative;background:var(--paper);color:var(--ink);padding:7px 10px;font-size:20px;box-shadow:0 0 0 2px var(--ink),4px 4px 0 var(--ink);margin-bottom:8px}
+.bubble::before{content:"";position:absolute;left:-10px;bottom:10px;border:6px solid transparent;border-right-color:var(--ink);border-right-width:8px}
+
+.screen{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;overflow:auto;background:var(--veil);
+  padding:calc(env(safe-area-inset-top,0px) + 16px) max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 16px) max(16px,env(safe-area-inset-left,0px));text-align:center}
+#coll,#over,#title{justify-content:safe center}
+.logo{font-family:var(--f-display);font-weight:700;line-height:.95;font-size:clamp(30px,10.5vw,58px);color:var(--hi);text-shadow:4px 4px 0 var(--ink),-2px -2px 0 var(--bg);margin:0;text-wrap:balance}
+.logo em{font-style:normal;display:inline-block;color:var(--cyan);transform:rotate(-6deg);animation:pump 1.2s steps(2) infinite}
+.sub{font-family:var(--f-display);font-size:10px;letter-spacing:.12em;color:var(--panel)}
+.panel{width:min(100%,360px);display:flex;flex-direction:column;gap:10px;padding:14px;background:var(--panel);
+  box-shadow:inset -3px -3px 0 var(--panel-lo),inset 3px 3px 0 var(--panel-hi),0 0 0 2px var(--ink),6px 6px 0 var(--ink)}
+.quote{max-width:34ch;font-size:25px;color:var(--paper);text-wrap:balance;margin:0}
+.quote small{display:block;font-family:var(--f-display);font-size:10px;letter-spacing:.1em;color:var(--cyan);margin-bottom:6px}
+.big-msg{font-family:var(--f-display);font-weight:700;font-size:clamp(24px,8vw,40px);color:var(--good);text-shadow:3px 3px 0 var(--ink);margin:0}
+.big-msg.bad{color:var(--bad)}
+.stats{display:grid;grid-template-columns:1fr auto;gap:4px 18px;font-size:23px;color:var(--ink);text-align:left;font-variant-numeric:tabular-nums;margin:0}
+.stats dt{font-family:var(--f-display);font-size:11px;align-self:center}
+.stats dd{margin:0;text-align:right}
+.rank{grid-column:1/-1;text-align:center;background:var(--ink);color:var(--hi);font-family:var(--f-display);font-size:13px;padding:6px}
+.newbest{color:var(--bad);font-family:var(--f-display);font-size:11px;animation:blink .5s steps(1) infinite}
+.hint{font-family:var(--f-display);font-size:9px;letter-spacing:.1em;color:var(--panel);line-height:1.6}
+.hint b{color:var(--hi);font-weight:400}
+
+#modal{z-index:60}
+.dialog{width:min(100%,380px);background:var(--panel);color:var(--ink);text-align:left;
+  box-shadow:inset -3px -3px 0 var(--panel-lo),inset 3px 3px 0 var(--panel-hi),0 0 0 2px var(--ink),6px 6px 0 var(--ink);animation:popin .16s steps(3)}
+@keyframes popin{from{transform:scale(.6)}}
+.dialog .titlebar.warn{background:var(--bad);color:var(--paper)}
+.dialog .body{padding:12px 14px;font-size:23px}
+.dialog .body small{font-size:17px;color:var(--panel-lo)}
+.dialog .actions{display:flex;flex-direction:column;gap:8px;padding:0 14px 14px}
+.dialog .row{display:flex;gap:8px}.dialog .row .btn{justify-content:center}
+.tiny{align-self:flex-end;background:none;border:0;color:var(--panel-lo);font-family:var(--f-body);font-size:14px;text-decoration:underline;cursor:pointer;padding:2px}
+.arena{position:relative;height:96px}
+.arena .btn{position:absolute;width:auto;transition:left .1s steps(2),top .1s steps(2)}
+.stars{display:flex;justify-content:center;gap:4px}
+.stars button{background:none;border:0;font-size:34px;color:var(--hi);text-shadow:2px 2px 0 var(--ink);cursor:pointer;padding:2px 4px}
+.terms{height:130px;overflow:auto;margin-top:8px;background:var(--paper);border:2px solid var(--ink);padding:6px 8px;font-size:17px;line-height:1.15}
+.terms p{margin:0 0 6px}
+
+/* collectables */
+.card{--rc:var(--panel);width:min(100%,520px);display:flex;gap:12px;align-items:center;text-align:left;background:var(--ink);border:3px solid var(--rc);padding:10px 12px;box-shadow:4px 4px 0 var(--rc)}
+.card canvas{width:64px;height:64px;image-rendering:pixelated;flex:none;background:var(--bg2)}
+.card .info{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.card .nm{font-family:var(--f-display);font-size:13px;color:var(--paper);overflow-wrap:anywhere}
+.card .rar{font-family:var(--f-display);font-size:9px;letter-spacing:.12em;color:var(--rc)}
+.card .fl{font-size:19px;color:var(--panel)}
+.card .pk{font-size:19px;color:var(--hi)}
+.card .ct{font-family:var(--f-display);font-size:9px;color:var(--cyan)}
+.collhead{display:flex;flex-wrap:wrap;gap:8px 16px;justify-content:center;font-family:var(--f-display);font-size:11px;letter-spacing:.06em}
+.collhead b{color:var(--hi);font-weight:400}
+.meter{width:min(100%,520px);height:14px;border:2px solid var(--ink);background:var(--bg2)}
+.meter i{display:block;height:100%;background:repeating-linear-gradient(90deg,var(--hi) 0 6px,transparent 6px 8px)}
+.grid{width:min(100%,520px);display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:8px}
+.tile{--rc:var(--panel);background:var(--ink);border:3px solid var(--rc);padding:6px 3px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;color:var(--paper);font-family:var(--f-body);font-size:14px;line-height:1;min-width:0}
+.tile canvas{width:40px;height:40px;image-rendering:pixelated}
+.tile span{overflow-wrap:anywhere;text-align:center}
+.tile.locked{border-color:var(--panel-lo);color:var(--panel-lo)}
+.tile.sel{outline:3px solid var(--paper);outline-offset:1px}
+.tile.perk::after{content:"PERK";font-family:var(--f-display);font-size:7px;color:var(--ink);background:var(--rc);padding:1px 3px}
+.btnrow{width:min(100%,520px);display:flex;gap:8px;flex-wrap:wrap}
+.btnrow .btn{flex:1 1 150px}
+.mbox{width:140px;height:140px;display:grid;place-items:center;background:var(--hi);color:var(--ink);font-family:var(--f-display);font-weight:700;font-size:80px;
+  box-shadow:inset -6px -6px 0 rgba(0,0,0,.25),inset 6px 6px 0 rgba(255,255,255,.4),0 0 0 3px var(--ink),8px 8px 0 var(--ink)}
+.mbox.shake{animation:wob .09s steps(2) infinite}
+@keyframes wob{50%{transform:rotate(7deg) scale(1.06)}}
+.mbox.open{animation:popin .2s steps(3)}
+.drop{display:flex;gap:10px;align-items:center}
+
+#toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 70px);transform:translateX(-50%);z-index:80;max-width:calc(100% - 32px);
+  background:var(--hi);color:var(--ink);font-family:var(--f-display);font-size:12px;letter-spacing:.04em;padding:8px 12px;box-shadow:0 0 0 2px var(--ink),4px 4px 0 var(--ink);text-align:center;pointer-events:none;opacity:0}
+#toast.show{animation:toast 1.7s steps(8) both}
+@keyframes toast{0%{opacity:0;transform:translate(-50%,-10px)}10%,85%{opacity:1;transform:translate(-50%,0)}100%{opacity:0}}
+.float{position:fixed;z-index:90;pointer-events:none;font-family:var(--f-display);font-weight:700;font-size:16px;color:var(--hi);text-shadow:2px 2px 0 var(--ink);animation:floatup .7s steps(6) forwards}
+.float.minus{color:var(--bad)}
+@keyframes floatup{to{transform:translateY(-44px);opacity:0}}
+.px{position:fixed;z-index:89;width:8px;height:8px;pointer-events:none;animation:burst .5s steps(5) forwards}
+@keyframes burst{to{transform:translate(var(--dx),var(--dy));opacity:0}}
+
+@media (prefers-reduced-motion:reduce){
+  body,body.frenzy,.pointy canvas,.logo em,.crumb.now,.mbox.shake{animation:none}
+  #app.shake,.list.in .item,.dialog,.px{animation:none}
+  .px{display:none}
+}
+</style>
+
+</head>
+<body>
+<div id="app">
+  <div class="hud">
+    <span>SCORE <b id="score">000000</b></span>
+    <span class="grow">LV <b id="lv">1</b></span>
+    <span class="combo" id="combo">x0</span>
+    <button class="mute" id="mute" type="button" aria-label="Toggle sound">SND ON</button>
+  </div>
+  <div class="timebar" id="timebar" aria-label="Time left"><i id="timefill"></i></div>
+  <section class="goal" id="goal" aria-live="polite">
+    <div class="ticket"><span id="ticket">TICKET #0000</span><span id="stepno">STEP 1/2</span></div>
+    <div class="crumbs" id="crumbs"></div>
+  </section>
+  <section class="win">
+    <div class="titlebar"><span id="wtitle">MAIN MENU</span><em class="depth" id="depth">D1</em><button class="tb-x" id="tbx" type="button" aria-label="Close window">X</button></div>
+    <div class="list" id="list"></div>
+  </section>
+  <footer class="pointy">
+    <canvas id="pc" width="48" height="64" aria-hidden="true"></canvas>
+    <div class="bubble" id="bubble">Follow the objective. Trust nothing.</div>
+  </footer>
+</div>
+
+<div class="screen" id="title">
+  <canvas id="tpc" width="72" height="96" aria-hidden="true" style="image-rendering:pixelated"></canvas>
+  <h1 class="logo">MENU<br>SIMULATOR<br><em>2K26</em></h1>
+  <div class="sub">THE MENU IS THE GAME · BY MENUCORP</div>
+  <div class="panel" id="tmenu"></div>
+  <p class="quote" id="tquote"></p>
+  <div class="hint" id="tbest"></div>
+</div>
+
+<div class="screen" id="inter" hidden>
+  <p class="big-msg" id="ititle">TASK COMPLETE</p>
+  <div class="sub" id="ibonus"></div>
+  <div id="idrop" class="drop"></div>
+  <p class="quote" id="iquote"></p>
+  <div style="width:min(100%,300px)" class="prog"><i id="iprog"></i></div>
+  <div class="hint">LOADING NEXT MENU · TAP TO SKIP</div>
+</div>
+
+<div class="screen" id="over" hidden>
+  <p class="big-msg bad">SYSTEM HALTED</p>
+  <div class="sub" id="onear">YOU RAN OUT OF TIME. THE MENUS DID NOT.</div>
+  <div class="panel">
+    <dl class="stats" id="ostats"></dl>
+    <button class="btn big prime" id="again" type="button">▸ ONE MORE GO</button>
+    <button class="btn big" id="ocoll" type="button">COLLECTABLES</button>
+    <button class="btn big" id="tomenu" type="button">MAIN MENU</button>
+    <button class="btn big" id="copy" type="button">COPY SCORE</button>
+  </div>
+  <p class="quote" id="oquote"></p>
+</div>
+
+<div class="screen" id="coll" hidden>
+  <p class="big-msg" style="color:var(--hi)">COLLECTABLES</p>
+  <div class="collhead" id="chead"></div>
+  <div class="meter"><i id="cmeter"></i></div>
+  <div class="card" id="cdetail"></div>
+  <div class="btnrow">
+    <button class="btn big prime" id="cbox" type="button">OPEN MENU BOX</button>
+    <button class="btn big" id="cback" type="button">◄ BACK</button>
+  </div>
+  <div class="grid" id="cgrid"></div>
+</div>
+
+<div class="screen" id="box" hidden>
+  <p class="big-msg" id="btitle" style="color:var(--hi)">MENU BOX</p>
+  <div class="sub" id="bsub">CONTAINS ONE (1) MENU ITEM. PROBABLY.</div>
+  <div class="mbox" id="mbox">?</div>
+  <div class="card" id="breveal" hidden></div>
+  <div class="btnrow" style="max-width:360px">
+    <button class="btn big prime" id="bagain" type="button">OPEN</button>
+    <button class="btn big" id="bback" type="button">◄ BACK</button>
+  </div>
+</div>
+
+<div class="screen" id="modal" hidden></div>
+<div id="toast" role="status"></div>
+
+<script>
+(()=>{
+const $=s=>document.querySelector(s);
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const fmt=n=>n.toLocaleString('en-GB');
+
+/* ---------- SOUND ---------- */
+let ac=null, muted=store.get('ms26-muted',false);
+function audio(){if(!ac){try{ac=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(ac&&ac.state==='suspended')ac.resume();return ac}
+function tone(f,dur,type='square',vol=.07,when=0,slide){if(muted)return;const a=audio();if(!a)return;const t=a.currentTime+when;const o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(slide,t+dur);g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g).connect(a.destination);o.start(t);o.stop(t+dur+.03)}
+function noise(dur,vol=.05){if(muted)return;const a=audio();if(!a)return;const b=a.createBuffer(1,Math.floor(a.sampleRate*dur),a.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);const s=a.createBufferSource(),g=a.createGain();g.gain.value=vol;s.buffer=b;s.connect(g).connect(a.destination);s.start()}
+const sfx={
+  click:c=>{const k=Math.min(c,20);tone(520+k*40,.05,'square',.07);tone(780+k*60,.06,'square',.05,.035)},
+  wrong:()=>{tone(240,.28,'sawtooth',.09,0,60);noise(.14,.06)},
+  complete:()=>[523,659,784,1047,1319].forEach((f,i)=>tone(f,.11,'square',.06,i*.06)),
+  mega:()=>[392,523,659,784,1047,1319,1568,2093].forEach((f,i)=>tone(f,.1,'square',.06,i*.055)),
+  pop:()=>{tone(1400,.04,'square',.06);tone(700,.09,'square',.06,.05)},
+  tick:()=>tone(1900,.03,'square',.045),
+  over:()=>[784,659,523,392,262,131].forEach((f,i)=>tone(f,.22,'triangle',.1,i*.12)),
+  coin:()=>{tone(988,.06,'square',.06);tone(1319,.2,'square',.06,.06)},
+  start:()=>[262,392,523,784,1047].forEach((f,i)=>tone(f,.08,'square',.06,i*.05)),
+  shuffle:()=>{for(let i=0;i<7;i++)tone(300+Math.random()*1000,.04,'square',.04,i*.035)},
+  combo:n=>[0,4,7,12].forEach((s,i)=>tone(440*Math.pow(2,(s+Math.min(n,30)/2)/12),.08,'square',.05,i*.05)),
+  nav:()=>tone(880,.04,'square',.05),
+  frenzy:()=>{for(let i=0;i<12;i++)tone(300+i*120,.06,i%2?'square':'sawtooth',.05,i*.04)},
+  rarity:r=>({C:()=>sfx.coin(),R:()=>sfx.combo(6),E:()=>sfx.complete(),L:()=>{sfx.mega();tone(2093,.5,'triangle',.07,.5)},X:()=>{tone(110,.6,'sawtooth',.09,0,55);[466,440,415,392].forEach((f,i)=>tone(f,.2,'square',.05,.1+i*.15))}})[r](),
+  roll:()=>{for(let i=0;i<14;i++)tone(400+i*60,.03,'square',.04,i*.085)}
+};
+
+/* ---------- CONTENT ---------- */
+const ROOT=["Settings","Options","Preferences","Menu","More…","System","Tools","Advanced","Control Panel","☰ Hamburger","Config","Setup","Hub","Dashboard","Start","Home","Main Menu","Admin","Customise","Extras","Utilities","Manage","Account Centre","⋮ Kebab","••• Meatballs"];
+const MID=["Audio","Video","Display","Privacy","Accessibility","Notifications","Account","Network","Bluetooth","Language","Controls","Keybinds","Gameplay","Graphics","Cookies","Legal","Storage","Battery","Updates","Security","Experimental","Developer","Personalisation","Sync","Profile","Region","Time & Date","Smart Fridge","Vibes","Feelings","Other","Miscellaneous","Danger Zone","Subscriptions","Theme","Ethics","Snacks","Advanced Advanced","Sound","Haptics","Fonts","Colours","Cursor","Mouse","Keyboard","Gestures","Voice","Camera","Microphone","Location","Permissions","Backups","Cloud","Devices","Printers","Wi-Fi","VPN","Proxy","Firewall","Passwords","Passkeys","Two-Factor","Recovery","Billing","Payments","Invoices","Loyalty Points","Rewards","Achievements","Friends","Blocked Users","Family","Parental Controls","Screen Time","Focus","Sleep","Wellbeing","Energy","Eco Mode","Performance","Overclock","Cooling","Fans","Lights","RGB","Kettle","Toaster","Doorbell","Lawnmower","Car","Garage","Thermostat","Heat Pump","Plugins","Extensions","Add-ons","Mods","Cheats","Debug","Logs","Diagnostics","Telemetry","Analytics","Tracking","Ads","Ad Choices","Partners","Third Parties","Fourth Parties","Lawyers","Feedback","Support","FAQ","Help","About","Credits","Licences","Version","Beta","Alpha","Omega","Labs","Secret","Hidden","Forbidden","Void","The Basement","Attic","Drawer of Cables","Bin","Archive","Legacy","Classic","Retro","Future","Destiny","Regret","Hope","Misc. Misc.","Sub-Settings","Meta","Menus","Pigeons","Moon","Taxes","Spreadsheets","Soup"];
+const LEAF=["Set Volume to 11","Enable Dark Mode","Disable Fun","Reset to Defaults","Mute Notifications","Apply","Apply (For Real)","Confirm Confirmation","Toggle Toggle","Save","Allow Everything","Accept Terms","Unsubscribe","Enable Turbo","Opt Out","Rename Fridge","Clear Cache","Mute Grandma","Max Brightness","Reticulate Splines","Disable Ads (£4.99)","Enable Comic Sans","Become Settings","Undo Undo","Calibrate Vibes","Delete Monday","Enable Enable","Disable Disable","Factory Reset Feelings","Turn It Off and On","Update Now","Remind Me Never","Snooze Forever","Sync to Toaster","Pair With Kettle","Allow Fridge to Vote","Set Fan to Jet Engine","Brightness: Sun","Ringtone: Screaming","Export to Fax","Print to Void","Save as FINAL_v2","Enable Haunting","Download More RAM","Rotate 360°","Uninstall Gravity","Opt In to Opting Out","Speak to Manager","Sort by Vibe","Request Desktop Site","Clear All Hope","Undo Everything","Restore Purchases","Skip Intro","Show Hidden Files","Hide Shown Files","Empty the Bin","Timezone: Vibes","Approve Pigeon","Feed the Menu"];
+const BACK="Back";
+const WHO=["YOUR NAN","THE SMART FRIDGE","A MAN CALLED STEVE","YOUR LINE MANAGER","LEGAL","THE TOASTER","FUTURE YOU","A GHOST","IT (CRYING)","THE INTERN","YOUR CAT","THE BOARD","A SENTIENT KETTLE","THE MOON","A PIGEON","THE ALGORITHM","YOUR PRINTER","THE COMMITTEE","YOUR MUM","A RIVAL MENU","THE MENU ITSELF","SOUP"];
+const URG=["ASAP","NOW","YESTERDAY","URGENT","BEFORE LUNCH","OR ELSE","!!!","CRITICAL","VIBES-CRITICAL"];
+const WISDOM=[
+"A menu is just a list that went to business school.",
+"Every Settings contains a smaller Settings. It is settings all the way down.",
+"The Back button only takes you back. It cannot take you home.",
+"Stare into the Options long enough and the Options stare into your Preferences.",
+"Advanced Settings are just Settings that went to the gym.",
+"Never trust a button that says OK. It has never once been okay.",
+"Accept all cookies, and you accept all consequences.",
+"Somewhere a Reset to Defaults button waits for its moment. Let it wait.",
+"Loading is not a progress bar. Loading is a state of mind.",
+"The hamburger menu contains no hamburger. Grief is part of the UI.",
+"Dark Mode will not make you mysterious. But it helps.",
+"He who clicks fast clicks twice.",
+"The real menu was the submenus we opened along the way.",
+"There are two kinds of people: those who read the Terms, and liars.",
+"A greyed-out button still has dreams.",
+"Notifications: the menu that menus you back.",
+"Apply. Then Apply again. Then Confirm. Then believe.",
+"To find the setting, you must become the setting.",
+"The shortest path between two menus is a search bar nobody added.",
+"Your preferences have been saved. Your soul has not.",
+"An Are You Sure dialog is just a door asking if you meant to open it.",
+"Every menu was designed by a committee of one very tired person.",
+"Restart required. Life also requires restarts.",
+"The X in the corner is a suggestion, not a promise.",
+"Experimental Features are features that have not apologised yet.",
+"Scroll down. Further. There it is. No it isn't.",
+"Keyboard shortcuts are menus for people who gave up on menus.",
+"The checkbox was ticked all along. It was you who was unticked.",
+"In 2K26 every toaster has a Settings menu. Respect the toaster.",
+"Privacy > Privacy Settings > Privacy. You have gone too deep.",
+"Combos are temporary. Menus are eternal.",
+"Help > Help Topics > How to Use Help. The snake eats its tail.",
+"A default is a choice someone else made at 4pm on a Friday.",
+"The cookie banner is load-bearing. Do not remove it.",
+"Wisdom loading… 99%… 99%… 99%…",
+"Settngs and Settings look alike. So do wolves and dogs.",
+"A Legacy option is just the old option wearing a cape.",
+"If a button is pressed in an empty menu, it still costs three seconds.",
+"Volume only goes to 11 if you believe it does.",
+"Do not fear the submenu. Fear the sub-submenu.",
+"Rate us five stars and a developer somewhere feels nothing.",
+"Close all windows. Open one door. It is also a window.",
+"Collect them all. Then collect the menus they came in.",
+"A Menu Box contains a menu item. A menu item contains regret.",
+"The more menus you open, the fewer you close.",
+"Pagination is just a menu wearing a trench coat.",
+"A dropdown is a menu that is shy.",
+"Upside down, every menu looks like a different menu. It is not.",
+"Frenzy is not a mode. Frenzy is a lifestyle.",
+"The Terms were long because your patience was short.",
+"Premium unlocks the Back button. Freedom has a subscription.",
+"If your menu items start moving on their own, do not feed them.",
+"A Mega Ticket is just twelve small tickets in a coat.",
+"Menu Bucks cannot be spent anywhere else. That is what makes them precious.",
+"Duplicates are just items that wanted to see you again.",
+"Cursed items are honest about it. Respect that.",
+"Somewhere, right now, a menu is opening you.",
+"Nobody has ever reached the bottom of Miscellaneous.",
+"Soup is not a setting. And yet, here we are."
+];
+const GOOD=["CLICK.","Menu'd.","Crisp navigation.","Your thumb is a legend.","Very settings. Much option.","The submenu fears you.","Correct. Suspiciously correct.","Clean.","That's the one.","Pointy approves.","DEEPER.","You are the menu now."];
+const BAD=["That was a decoy, champ.","Close. Spelling matters.","Bold. Wrong.","That button has a family.","Error 404: skill not found.","The menu will remember this.","Read it again. But faster.","Nope. Legacy trap.","The decoys are winning."];
+const RANKS=[[0,"MENU TOURIST"],[600,"SUBMENU SQUIRE"],[1600,"DROPDOWN DISCIPLE"],[3200,"TOGGLE KNIGHT"],[6000,"SETTINGS SAGE"],[10000,"ARCHMAGE OF PREFERENCES"],[16000,"THE MENU ITSELF"],[30000,"MENU DEITY"],[50000,"BEYOND MENUS"]];
+const TERMS=["1. By looking at this menu you agree to the menu.","2. The menu may contain additional menus, which you also agree to.","3. MenuCorp may change these Terms at any time, including during this sentence.","4. You grant MenuCorp a perpetual licence to your thumb.","5. Cookies are not food. Food is not cookies. Do not eat the banner.","6. The Back button is provided as is, and as is not.","7. Any resemblance to a usable interface is coincidental.","8. You waive your right to a search bar.","9. Disputes will be settled by a dropdown of 400 countries.","10. The Fridge has read these Terms. Have you?","11. Clause 11 intentionally left confusing.","12. If you have scrolled this far, you may proceed. Well done. Nobody does."];
+
+/* collectables: [name, rarity, flavour, perk key, perk text] */
+const ITEMS=[
+["Bent Paperclip","C","It wanted to help. It never could."],["Dusty Checkbox","C","Ticked once in 2009."],["Loose Radio Button","C","Only one of you can be selected."],
+["Greyed-Out Button","C","Still has dreams."],["Cookie Crumb","C","Evidence of consent."],["Tooltip Fragment","C","This setting does what it"],
+["Spare Ellipsis","C","…"],["Generic Gear Icon","C","It is always a gear."],["Hamburger Bun","C","The patty is in another menu."],
+["Default Wallpaper","C","Rolling green hills, eternal."],["Lost Keybind","C","Was bound to F13."],["Used Progress Bar","C","Only 1% left on it."],
+["Single Breadcrumb","C","Leads nowhere. Delicious."],["Placeholder Text","C","Lorem? I hardly know 'em."],["Separator Line","C","Divides menus. Unites people."],
+["Unread Notification","C","(1)"],["Old Changelog","C","Bug fixes and improvements."],["Toggle Spring","C","Boing."],
+["Shiny Scrollbar","R","Smooth. Too smooth."],["Hover State","R","Only exists when you look at it."],["Shortcut Scroll","R","Ctrl+Alt+Menu."],
+["Right-Click Relic","R","Contains Inspect Element."],["Tab Key of Focus","R","Moves you forward. Spiritually."],["Accordion Panel","R","Expands on request. Plays no music."],
+["Modal of Mild Concern","R","Are you sure? Medium sure?"],["Breadcrumb Trail","R","Finally, a way home. It is blocked."],["Unsaved Changes","R","Will be lost. Gracefully."],
+["Lucky Checkbox","R","Ticked by fate.","luck","+10% item drop chance"],["Pointy's Spare Glove","R","Pointy has no hands. Suspicious."],
+["Settings Snow Globe","R","Shake to reset to defaults."],["Bookmark of Intent","R","You will read it later. You won't."],
+["Combo Crystal","E","Hums at x10.","crystal","Wrong taps halve your combo instead of resetting it"],
+["Cookie Jar of Refusal","E","Contains zero accepted cookies.","cookie","Reject All is no longer tiny"],
+["Extended Timebar","E","Longer. Not better. Longer.","timebar","+10s maximum time"],
+["Menu Magnet","E","Attracts Bucks and lint.","magnet","+25% Menu Bucks"],
+["Infinite Scroll","E","Has no bottom. Has no peace."],["Mega Dropdown","E","400 countries and one Atlantis."],
+["Context Menu","E","Right for every occasion."],["Pixel-Perfect Margin","E","Exactly 16px. Every time."],
+["The Fourth Option","E","Of three."],["Dark Mode Shard","E","Absorbs judgement."],
+["Golden Back Button","L","It still doesn't help. But it's gold.","back","Back no longer costs time"],
+["Chrono Toggle","L","Flips time. Gently.","chrono","+5s starting time"],
+["Crown of Preferences","L","Heavy is the head that sets defaults.","crown","Task bonus +50%"],
+["The Original Settings","L","First of its kind. Contains a smaller one."],["Kettle's Blessing","L","Steam with purpose."],
+["Knob That Goes to 11","L","Goes to 12 when no one is looking."],["Pointy Plushie","L","Official merch. Squeaks on click."],
+["Cursed Dropdown","X","It opens upward. Always.","cursed","Double points, but 50% more chaos"],
+["Haunted Hamburger","X","Something moves in the bun.","haunted","+50% score, but one extra decoy per menu"],
+["Eternal Spinner","X","Still spinning. Always will."],["Signed Terms","X","You agreed to everything. Everything."],
+["The Unclosable Popup","X","There was never an X."],["Reply-All Amulet","X","Notifies 4,000 colleagues of nothing."]
+];
+const ITEM={};ITEMS.forEach(([n,r,f,p,pt])=>ITEM[n]={n,r,f,p,pt});
+const RNAME={C:"COMMON",R:"RARE",E:"EPIC",L:"LEGENDARY",X:"CURSED"};
+const RC={C:'#c4c2bc',R:'#62e2ff',E:'#c86bff',L:'#ffd21f',X:'#ff4238'};
+const RVAR={C:'var(--panel)',R:'var(--cyan)',E:'var(--epic)',L:'var(--hi)',X:'var(--bad)'};
+const RORD="CREXL";
+const BOX_COST=150;
+
+/* ---------- PERSISTENT ---------- */
+const P={best:store.get('ms26-best',0),col:store.get('ms26-col',{}),bucks:store.get('ms26-bucks',null),menus:store.get('ms26-menus',0),runs:store.get('ms26-runs',0)};
+if(P.bucks===null){P.bucks=BOX_COST;store.set('ms26-bucks',P.bucks);P.welcome=true}
+function save(){store.set('ms26-best',P.best);store.set('ms26-col',P.col);store.set('ms26-bucks',P.bucks);store.set('ms26-menus',P.menus);store.set('ms26-runs',P.runs)}
+const ownedCount=()=>ITEMS.filter(i=>P.col[i[0]]>0).length;
+const has=k=>ITEMS.some(i=>i[3]===k&&P.col[i[0]]>0);
+function rollItem(boost){
+  const one=()=>{const x=Math.random();return x<.015?'X':x<.06?'L':x<.18?'E':x<.45?'R':'C'};
+  let r=one();if(boost){const r2=one();if(RORD.indexOf(r2)>RORD.indexOf(r))r=r2}
+  return pick(ITEMS.filter(i=>i[1]===r))[0];
+}
+function grant(name){const isNew=!(P.col[name]>0);P.col[name]=(P.col[name]||0)+1;save();return isNew}
+
+/* ---------- PIXEL ART ---------- */
+function hash(s){let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
+function rng(seed){return()=>{seed=(seed+0x6D2B79F5)>>>0;let t=seed;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+function drawItem(cv,name,locked){
+  cv.width=cv.height=12;const c=cv.getContext('2d');c.clearRect(0,0,12,12);
+  const R=rng(hash(name)),it=ITEM[name],col=locked?'#3b3b48':RC[it.r],col2=locked?'#2a2a34':'#f5f2e6',ink='#0d0d16';
+  const g=[];for(let y=0;y<12;y++){g.push([]);for(let x=0;x<6;x++){const inside=y>0&&y<11&&x>0;const v=R();g[y].push(inside&&v<.5?(v<.13?2:1):0)}}
+  for(let y=0;y<12;y++)for(let x=0;x<6;x++){const v=g[y][x];if(!v)continue;c.fillStyle=v===2?col2:col;c.fillRect(x,y,1,1);c.fillRect(11-x,y,1,1)}
+  if(!locked&&it.r!=='C'){c.fillStyle=ink;c.fillRect(4,5,1,1);c.fillRect(7,5,1,1)}
+  if(locked){c.fillStyle='#6a6862';[[5,3],[6,3],[7,4],[6,5],[6,6],[6,8]].forEach(([x,y])=>c.fillRect(x,y,1,1))}
+}
+const SPR=["K...........","KK..........","KWK.........","KWWK........","KWWWK.......","KWWWWK......","KWEWEWK.....","KWWWWWWK....","KWMMMWWWK...","KWWWWWWWWK..","KWWWWWKKKKK.","KWWKWWK.....","KWK.KWWK....","KK..KWWK....","K....KWWK...",".....KKK...."];
+let mood='ok';
+function drawPointy(cv,scale,m){
+  const c=cv.getContext('2d');c.clearRect(0,0,cv.width,cv.height);
+  const blink=Date.now()%3200<140;
+  const col={K:'#0d0d16',W:'#f5f2e6',E:blink?'#f5f2e6':(m==='bad'?'#ff4238':'#0d0d16'),M:m==='bad'?'#ff4238':(m==='good'?'#3ddc6e':'#0d0d16')};
+  SPR.forEach((row,y)=>{[...row].forEach((ch,x)=>{let k=ch;if(k==='M'&&m==='ok'&&x!==3)k='W';if(k==='.')return;c.fillStyle=col[k];c.fillRect(x*scale,y*scale,scale,scale)})});
+  if(m==='bad'){c.fillStyle='#62e2ff';c.fillRect(7*scale,5*scale,scale,scale*2)}
+}
+function pointyLoop(){drawPointy($('#pc'),4,mood);if(!$('#title').hidden)drawPointy($('#tpc'),6,'good');requestAnimationFrame(pointyLoop)}
+let sayT=0;
+function say(t,m='ok',ms=1400){$('#bubble').textContent=t;mood=m;clearTimeout(sayT);sayT=setTimeout(()=>{mood='ok'},ms)}
+
+function fillCard(el,name,count){
+  const it=ITEM[name],locked=!(count>0);el.style.setProperty('--rc',locked?'var(--panel-lo)':RVAR[it.r]);el.innerHTML='';
+  const cv=document.createElement('canvas');drawItem(cv,name,locked);
+  const info=document.createElement('div');info.className='info';
+  const add=(cls,t)=>{const d=document.createElement('div');d.className=cls;d.textContent=t;info.appendChild(d)};
+  add('rar',locked?'??? · LOCKED':RNAME[it.r]);add('nm',locked?'???':it.n);add('fl',locked?'Find it at the bottom of a menu. Or in a Menu Box.':it.f);
+  if(!locked&&it.p)add('pk','PERK: '+it.pt);
+  if(!locked)add('ct','OWNED ×'+count);
+  el.append(cv,info);
+}
+
+/* ---------- STATE ---------- */
+const S={running:false,paused:false,modal:false,loading:false,score:0,level:0,combo:0,maxCombo:0,insane:store.get('ms26-insane',false),
+  time:25,maxTime:40,path:[],step:0,opts:[],layout:'',cur:'',page:0,dropOpen:false,mega:false,lastT:0,lastSec:99,ok:0,bad:0,token:0,menuId:0,
+  frenzyUntil:0,pendingFrenzy:false,runItems:[],runMenus:0,drop:null};
+const frenzy=()=>performance.now()<S.frenzyUntil;
+function mult(){return (S.insane?2:1)*(has('cursed')?2:1)*(has('haunted')?1.5:1)*(frenzy()?3:1)}
+function diff(){const L=S.level+(S.insane?5:0);return{len:Math.min(2+Math.floor(L/1.5),9),n:Math.min(3+Math.floor(L/2),7)+(has('haunted')?1:0),
+  typo:Math.min(.25+L*.06,.85),drain:Math.min(1+L*.06,2.2),gain:Math.min(1.2+L*.08,2.3),
+  chaos:(S.level<1&&!S.insane)?0:Math.min(Math.min(.12+L*.03,.55)*(has('cursed')?1.5:1),.8)}}
+
+/* ---------- UI HELPERS ---------- */
+function toast(t){const el=$('#toast');el.textContent=t;el.classList.remove('show');void el.offsetWidth;el.classList.add('show')}
+function shake(){const a=$('#app');a.classList.remove('shake');void a.offsetWidth;a.classList.add('shake')}
+function floatAt(el,text,minus){const r=el.getBoundingClientRect();const f=document.createElement('div');f.className='float'+(minus?' minus':'');f.textContent=text;
+  f.style.left=(r.left+r.width*.6)+'px';f.style.top=(r.top-4)+'px';document.body.appendChild(f);setTimeout(()=>f.remove(),800)}
+function burst(el,n=12){const r=el.getBoundingClientRect();const cs=['var(--hi)','var(--good)','var(--cyan)','var(--paper)','var(--epic)'];
+  for(let i=0;i<n;i++){const p=document.createElement('i');p.className='px';p.style.left=(r.left+r.width/2)+'px';p.style.top=(r.top+r.height/2)+'px';
+  p.style.background=cs[i%5];const a=Math.random()*Math.PI*2,d=40+Math.random()*80;p.style.setProperty('--dx',Math.cos(a)*d+'px');p.style.setProperty('--dy',Math.sin(a)*d+'px');
+  document.body.appendChild(p);setTimeout(()=>p.remove(),550)}}
+function hud(){const fr=frenzy();$('#score').textContent=String(S.score).padStart(6,'0');$('#lv').textContent=S.level+1;
+  const cb=$('#combo');cb.textContent=(fr?'FRENZY ':'')+'x'+S.combo;cb.classList.toggle('fr',fr);
+  $('#timefill').style.width=(Math.max(0,S.time/S.maxTime)*100)+'%';$('#timebar').classList.toggle('low',S.time<6&&!fr);$('#timebar').classList.toggle('fr',fr);
+  document.body.classList.toggle('frenzy',fr&&S.running)}
+function setMute(m){muted=m;store.set('ms26-muted',m);$('#mute').textContent=m?'SND OFF':'SND ON'}
+function mk(label,cls,fn){const b=document.createElement('button');b.type='button';b.className='btn '+(cls||'');b.textContent=label;b.addEventListener('click',fn);return b}
+function showOnly(id){['#title','#over','#inter','#modal','#coll','#box'].forEach(s=>{$(s).hidden=s!==id})}
+
+/* ---------- GAME FLOW ---------- */
+function newTask(){
+  const d=diff();S.mega=S.level>=3&&Math.random()<.15;
+  const len=S.mega?Math.min(d.len+4,12):d.len;
+  const path=[pick(ROOT)],mids=shuffle(MID.slice());
+  for(let i=0;i<len-2;i++)path.push(mids[i]);
+  path.push(pick(LEAF));S.path=path;S.step=0;
+  $('#goal').classList.toggle('mega',S.mega);
+  $('#ticket').textContent=S.mega?`★ MEGA TICKET · ${pick(WHO)} · 3× BONUS`:`#${1000+Math.floor(Math.random()*9000)} · ${pick(WHO)} · ${pick(URG)}`;
+  if(S.mega){toast('★ MEGA TICKET ★ 12 MENUS DEEP. GUARANTEED LOOT.');sfx.mega()}
+  renderMenu();
+}
+function renderGoal(){
+  const c=$('#crumbs');c.innerHTML='';c.classList.toggle('dense',S.path.length>6);
+  S.path.forEach((p,i)=>{if(i){const s=document.createElement('span');s.className='sep';s.textContent='›';c.appendChild(s)}
+    const e=document.createElement('span');e.className='crumb'+(i<S.step?' done':i===S.step?' now':'');e.textContent=p;c.appendChild(e)});
+  $('#stepno').textContent=`STEP ${Math.min(S.step+1,S.path.length)}/${S.path.length}`;
+}
+function buildOptions(d){
+  const correct=S.path[S.step],pool=S.step===0?ROOT:S.step===S.path.length-1?LEAF:MID;
+  const out=[correct],seen=new Set([correct.toLowerCase()]);let g=0;
+  if(S.step>0&&Math.random()<.3){out.push(BACK);seen.add('back')}
+  while(out.length<d.n&&g++<300){const c=Math.random()<d.typo?typo(correct):pick(pool);if(!seen.has(c.toLowerCase())&&!S.path.includes(c)){seen.add(c.toLowerCase());out.push(c)}}
+  return shuffle(out);
+}
+function typo(w){
+  const L=[...w], i=1+Math.floor(Math.random()*Math.max(1,L.length-2)), r=Math.random(); let s=w;
+  if(r<.25&&L[i+1]&&/\w/.test(L[i])&&/\w/.test(L[i+1])&&L[i]!==L[i+1]){[L[i],L[i+1]]=[L[i+1],L[i]];s=L.join('')}
+  else if(r<.42&&L.length>4&&/\w/.test(L[i])){L.splice(i,1);s=L.join('')}
+  else if(r<.56&&/[a-z]/i.test(L[i])){L.splice(i,0,L[i]);s=L.join('')}
+  if(s===w) s=Math.random()<.6?w+pick([" (Legacy)"," 2"," Old"," Lite"," Pro","s"," (Beta)"," ™"," (Copy)"," (1)"," [Deprecated]"]):pick(["Advanced ","Classic ","New ","Real ","Other ","Not ","Ultra ","Mini "])+w;
+  return s;
+}
+function itemBtn(i){const o=S.opts[i];const b=document.createElement('button');b.type='button';b.className='btn item';
+  b.innerHTML='<span class="lbl"></span><kbd></kbd>';b.querySelector('.lbl').textContent=(o===BACK?'◄ ':'▸ ')+o;
+  b.addEventListener('click',()=>choose(i,b));return b}
+function sysBtn(label,fn){const b=document.createElement('button');b.type='button';b.className='btn item sys';b.innerHTML='<span class="lbl"></span><kbd>…</kbd>';b.querySelector('.lbl').textContent=label;
+  b.addEventListener('click',()=>{if(!S.running||S.paused||S.modal||S.loading)return;sfx.nav();fn()});return b}
+function renderMenu(keep){
+  if(!keep){S.opts=buildOptions(diff());S.cur=S.layout;S.layout='';S.page=0;S.dropOpen=false;S.menuId++;S.runMenus++;
+    if(S.cur==='drift'){const id=S.menuId;const iv=setInterval(()=>{if(id!==S.menuId||!S.running){clearInterval(iv);return}if(S.paused||S.modal)return;shuffle(S.opts);renderMenu(true)},850)}}
+  $('#wtitle').textContent=S.step===0?'MAIN MENU':S.path[S.step-1].toUpperCase();
+  $('#depth').textContent='D'+(S.step+1);
+  const list=$('#list');list.className='list';if(['mirror','upside','tiny'].includes(S.cur))list.classList.add(S.cur);
+  list.innerHTML='';
+  if(S.cur==='dropdown'&&!S.dropOpen){list.appendChild(sysBtn('▾ Select an option…',()=>{S.dropOpen=true;renderMenu(true)}))}
+  else if(S.cur==='more'){const per=3,pages=Math.ceil(S.opts.length/per);
+    for(let i=S.page*per;i<Math.min(S.opts.length,S.page*per+per);i++)list.appendChild(itemBtn(i));
+    if(pages>1)list.appendChild(sysBtn(`More… (page ${S.page+1}/${pages})`,()=>{S.page=(S.page+1)%pages;renderMenu(true)}))}
+  else S.opts.forEach((o,i)=>list.appendChild(itemBtn(i)));
+  [...list.children].forEach((b,k)=>{const kb=b.querySelector('kbd');if(kb)kb.textContent=k+1});
+  if(!keep){void list.offsetWidth;list.classList.add('in')}
+  renderGoal();
+}
+function choose(i,btn){
+  if(!S.running||S.paused||S.modal||S.loading)return;
+  const label=S.opts[i];
+  if(label===S.path[S.step]){
+    S.combo++;S.ok++;S.maxCombo=Math.max(S.maxCombo,S.combo);
+    const pts=Math.round(10*S.combo*mult());S.score+=pts;S.time=Math.min(S.maxTime,S.time+diff().gain);
+    btn.classList.add('ok');floatAt(btn,'+'+pts);burst(btn,frenzy()?20:12);sfx.click(S.combo);
+    const cb=$('#combo');cb.classList.remove('pump');void cb.offsetWidth;cb.classList.add('pump');
+    if(S.combo%15===0){const it=rollItem(true);const nw=grant(it);S.runItems.push(it);toast(`COMBO x${S.combo} DROP: ${it}${nw?' · NEW!':''}`);sfx.rarity(ITEM[it].r)}
+    else if(S.combo%10===0){toast(`COMBO x${S.combo} · ${pick(["MENU MASTER","UNSTOPPABLE CLICKER","THUMB OF DESTINY","OPTIONAL GOD"])}`);sfx.combo(S.combo)}
+    else say(pick(GOOD),'good',900);
+    advance();
+  }else{
+    if(label===BACK&&has('back')){btn.classList.add('no');sfx.nav();say("Golden Back Button. Free, useless, shiny.",'ok');return}
+    S.combo=has('crystal')?Math.floor(S.combo/2):0;S.bad++;S.time-=3;btn.classList.add('no');floatAt(btn,'-3s',true);sfx.wrong();shake();
+    say(label===BACK?"There is no going back. Only deeper.":pick(BAD),'bad',1400);
+  }
+  hud();
+}
+const LAYOUTS={mirror:'LEFT-HANDED MODE ENABLED',upside:'GRAVITY SETTINGS RESET',tiny:'ACCESSIBILITY: TEXT SIZE XXS',more:'PAGINATION ADDED FOR YOUR CONVENIENCE',dropdown:'MENU COLLAPSED TO SAVE SPACE',drift:'MENU ITEMS HAVE GAINED SENTIENCE'};
+function advance(){
+  S.step++;
+  if(S.step>=S.path.length)return completeTask();
+  const d=diff();
+  if(!frenzy()&&Math.random()<d.chaos){
+    const r=Math.random();
+    if(r<.45){S.layout=pick(Object.keys(LAYOUTS));renderMenu();toast(LAYOUTS[S.cur]);sfx.pop()}
+    else if(r<.58)pick([shuffleNow,loadingNow])();
+    else{if(Math.random()<d.chaos*.6)S.layout=pick(Object.keys(LAYOUTS));pick(MODALS)()}
+  }else renderMenu();
+}
+function completeTask(){
+  S.level++;const bonus=Math.round(100*S.level*(S.mega?3:1)*(has('crown')?1.5:1)*(S.insane?2:1));S.score+=bonus;
+  S.time=Math.min(S.maxTime,S.time+2+S.path.length*.6);hud();
+  S.mega?sfx.mega():sfx.complete();
+  S.paused=true;const tok=++S.token;
+  const dropChance=.3+(has('luck')?.1:0);let item=null,isNew=false;
+  if(S.mega||Math.random()<dropChance){item=rollItem(S.mega);isNew=grant(item);S.runItems.push(item)}
+  if(S.level%5===0)S.pendingFrenzy=true;
+  $('#ititle').textContent=S.mega?'MEGA TICKET CLEARED':'TASK COMPLETE';
+  $('#ibonus').textContent=`+${fmt(bonus)} BONUS · LEVEL ${S.level+1}${S.pendingFrenzy?' · FRENZY INCOMING':''}`;
+  const dr=$('#idrop');dr.innerHTML='';
+  if(item){const cd=document.createElement('div');cd.className='card';fillCard(cd,item,P.col[item]);cd.querySelector('.rar').textContent=(isNew?'NEW! ':'DUPLICATE · ')+RNAME[ITEM[item].r];dr.appendChild(cd);setTimeout(()=>sfx.rarity(ITEM[item].r),350)}
+  const wi=Math.floor(Math.random()*WISDOM.length);
+  $('#iquote').innerHTML='';const sm=document.createElement('small');sm.textContent=`PEARL OF WISDOM #${wi+1}`;$('#iquote').append(sm,WISDOM[wi]);
+  const ms=item?2600:2000;
+  const pr=$('#iprog');pr.style.transition='none';pr.style.width='0';$('#inter').hidden=false;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{pr.style.transition=`width ${ms/1000-.1}s steps(12)`;pr.style.width='100%'}));
+  const go=()=>{if(tok!==S.token||$('#inter').hidden)return;$('#inter').hidden=true;S.paused=false;S.lastT=performance.now();
+    if(S.pendingFrenzy){S.pendingFrenzy=false;S.frenzyUntil=performance.now()+9000;toast('MENU FRENZY · 3× POINTS · NO CHAOS · TIME FROZEN');sfx.frenzy()}
+    newTask()};
+  setTimeout(go,ms);$('#inter').onclick=()=>{sfx.nav();go()};
+}
+function loop(t){
+  if(!S.running)return;
+  const dt=Math.min(.1,(t-S.lastT)/1000);S.lastT=t;
+  if(!S.paused&&!frenzy()){S.time-=dt*diff().drain;const sec=Math.ceil(S.time);if(S.time<5&&sec!==S.lastSec){S.lastSec=sec;sfx.tick()}}
+  hud();
+  if(S.time<=0)return gameOver();
+  requestAnimationFrame(loop);
+}
+function startGame(){
+  audio();sfx.start();
+  S.maxTime=40+(has('timebar')?10:0);
+  Object.assign(S,{running:true,paused:false,modal:false,loading:false,score:0,level:0,combo:0,maxCombo:0,time:(S.insane?22:25)+(has('chrono')?5:0),
+    ok:0,bad:0,layout:'',cur:'',lastSec:99,frenzyUntil:0,pendingFrenzy:false,runItems:[],runMenus:0});
+  S.token++;showOnly(null);
+  const perks=ITEMS.filter(i=>i[3]&&P.col[i[0]]>0).length;
+  say(S.insane?"INSANE MODE. I can't watch.":perks?`${perks} perk${perks>1?'s':''} active. Go.`:"Follow the objective. Trust nothing.",'ok');
+  newTask();hud();S.lastT=performance.now();requestAnimationFrame(loop);
+}
+function gameOver(){
+  S.running=false;S.token++;S.menuId++;S.time=0;S.frenzyUntil=0;hud();document.body.classList.remove('frenzy');sfx.over();
+  S.modal=false;S.loading=false;
+  const nb=S.score>P.best,gap=P.best-S.score;if(nb)P.best=S.score;
+  const earned=Math.round((S.score/20+S.level*10)*(has('magnet')?1.25:1));
+  P.bucks+=earned;P.menus+=S.runMenus;P.runs++;save();
+  const acc=S.ok+S.bad?Math.round(100*S.ok/(S.ok+S.bad)):0;
+  const rank=RANKS.filter(r=>S.score>=r[0]).pop()[1];
+  $('#ostats').innerHTML=`<dt>SCORE</dt><dd>${fmt(S.score)}${nb?' <span class="newbest">NEW BEST</span>':''}</dd><dt>BEST</dt><dd>${fmt(P.best)}</dd><dt>TASKS DONE</dt><dd>${S.level}</dd><dt>MENUS OPENED</dt><dd>${S.runMenus}</dd><dt>MAX COMBO</dt><dd>x${S.maxCombo}</dd><dt>ACCURACY</dt><dd>${acc}%</dd><dt>ITEMS FOUND</dt><dd>${S.runItems.length}</dd><dt>MENU BUCKS</dt><dd>+${fmt(earned)}</dd><dt class="rank">RANK: ${rank}</dt>`;
+  $('#onear').textContent=nb?'A NEW RECORD. THE MENUS ARE NERVOUS.':gap>0&&gap<S.score*.25?`ONLY ${fmt(gap)} POINTS FROM YOUR BEST. SO CLOSE.`:P.bucks>=BOX_COST?`YOU CAN AFFORD A MENU BOX (${fmt(P.bucks)} MB).`:'YOU RAN OUT OF TIME. THE MENUS DID NOT.';
+  $('#oquote').innerHTML='';const sm=document.createElement('small');const wi=Math.floor(Math.random()*WISDOM.length);sm.textContent=`PARTING PEARL #${wi+1}`;$('#oquote').append(sm,WISDOM[wi]);
+  showOnly('#over');say("We'll get them next time. The menus, I mean.",'bad',3000);
+  setTimeout(()=>$('#again').focus({preventScroll:true}),50);
+}
+
+/* ---------- CHAOS ---------- */
+function openModal({title,warn,body,build}){
+  S.modal=true;sfx.pop();const m=$('#modal');m.innerHTML='';
+  const d=document.createElement('div');d.className='dialog';
+  d.innerHTML=`<div class="titlebar ${warn?'warn':''}"><span></span></div><div class="body"></div><div class="actions"></div>`;
+  d.querySelector('.titlebar span').textContent=title;d.querySelector('.body').innerHTML=body;
+  m.appendChild(d);m.hidden=false;build(d.querySelector('.actions'),d);
+  const f=d.querySelector('.actions button:not(:disabled)');if(f)f.focus({preventScroll:true});
+}
+function closeModal(){$('#modal').hidden=true;$('#modal').innerHTML='';S.modal=false}
+function reward(t,s,pts){S.time=Math.min(S.maxTime,S.time+s);S.score+=Math.round(pts*mult());sfx.coin();toast(t);closeModal();hud()}
+function punish(t,s){S.time-=s;S.combo=0;sfx.wrong();shake();toast(t);closeModal();hud()}
+function yesNo(a,ans,ok,bad){const row=document.createElement('div');row.className='row';shuffle(["YES","NO"]).forEach(l=>row.appendChild(mk(l,'big',()=>l===ans?ok():bad())));a.appendChild(row)}
+
+const MODALS=[
+  function cookies(){renderMenu();openModal({title:'COOKIE CONSENT 2K26',
+    body:'We value your privacy*. This menu uses 4,096 cookies to remember which menu you were in.<br><small>*we do not</small>',
+    build(a){const bad=[["ACCEPT ALL","prime","Accepted. Your fridge now knows your star sign."],["ACCEPT MOST","","Most cookies accepted. All cookies accepted."],["MANAGE (47 PAGES)","","Page 1 of 47… just kidding. Accepted."]];
+      shuffle(bad).forEach(([l,c,t])=>a.appendChild(mk(l,'big '+c,()=>punish(t+' -2s',2))));
+      const r=has('cookie')?mk('REJECT ALL','big',()=>reward('COOKIES REJECTED · +1.5s',1.5,60)):document.createElement('button');
+      if(!has('cookie')){r.type='button';r.className='tiny';r.textContent='reject all';r.onclick=()=>reward('COOKIES REJECTED · A RARE WIN +1.5s',1.5,60)}
+      a.appendChild(r)}})},
+  function confirmBox(){renderMenu();const Q=[["Continue navigating?","YES"],["Abandon this menu forever?","NO"],["Stop not continuing?","YES"],["Quit and touch grass?","NO"],["Keep going?","YES"],["Cancel the menu?","NO"],["Proceed with proceeding?","YES"],["Do you not want to not stop?","NO"]];
+    const [q,ans]=pick(Q);openModal({title:'ARE YOU SURE?',warn:true,body:q,build(a){yesNo(a,ans,()=>reward('CORRECTLY SURE +1s',1,40),()=>punish('YOU WERE NOT SURE -2s',2))}})},
+  function update(){renderMenu();openModal({title:'MENU OS 26.4.1',body:'A mandatory update is installing. Please do not turn off your thumb.<div class="prog" style="margin-top:10px"><i id="up"></i></div>',
+    build(a,d){const ar=document.createElement('div');ar.className='arena';const b=mk('SKIP','big');b.style.left='0';b.style.top='20px';let n=0;const id=S.menuId;
+      b.onclick=()=>{if(n<2){n++;b.textContent=n===1?'SKIP?':'SKIP!!';b.style.left=Math.random()*Math.max(0,ar.clientWidth-b.offsetWidth)+'px';b.style.top=Math.random()*Math.max(0,ar.clientHeight-b.offsetHeight)+'px';sfx.shuffle()}
+        else reward('UPDATE SKIPPED. BRAVE. +1s',1,50)};ar.appendChild(b);a.appendChild(ar);
+      const up=d.querySelector('#up');up.style.transition='width 2.4s steps(10)';requestAnimationFrame(()=>requestAnimationFrame(()=>up.style.width='100%'));
+      setTimeout(()=>{if(S.modal&&id===S.menuId&&$('#up')){closeModal();toast('UPDATE COMPLETE. NOTHING CHANGED.')}},2500)}})},
+  function rate(){renderMenu();openModal({title:'ENJOYING MENUS?',body:'Rate MENU SIMULATOR 2K26. Your opinion matters to us (legally).',
+    build(a){const s=document.createElement('div');s.className='stars';for(let k=1;k<=5;k++){const b=document.createElement('button');b.type='button';b.textContent='★';b.setAttribute('aria-label',k+' stars');
+      b.onclick=()=>k===5?reward('5 STARS. WE WILL IGNORE THIS TOO. +1s',1,80):punish('FEEDBACK SENT TO /DEV/NULL -1s',1);s.appendChild(b)}a.appendChild(s)}})},
+  function captcha(){renderMenu();openModal({title:'PROVE YOU ARE HUMAN',warn:true,body:'Tap the box that says exactly: <b>I AM NOT A MENU</b>',
+    build(a){const opts=shuffle(["I AM NOT A MENU",...shuffle(["I AM NOT A MENU.","I AM A MENU","I AM NOT A MEN U","I AM N0T A MENU","l AM NOT A MENU","I AM NOT  A MENU"]).slice(0,3)]);
+      opts.forEach(l=>a.appendChild(mk(l,'',()=>l==="I AM NOT A MENU"?reward('HUMANITY CONFIRMED +1s',1,50):punish('ROBOT DETECTED. PROCEED ANYWAY. -2s',2))))}})},
+  function terms(){renderMenu();openModal({title:'TERMS OF MENU',warn:false,body:'Scroll to the very bottom to accept.<div class="terms" id="tos">'+TERMS.map(t=>`<p>${t}</p>`).join('')+'</div>',
+    build(a,d){const acc=mk('I HAVE READ EVERYTHING','big prime',()=>reward('TERMS ACCEPTED. YOU OWN NOTHING. +1.5s',1.5,70));acc.disabled=true;
+      a.append(acc,mk('DECLINE','big',()=>punish('DECLINING IS NOT AN OPTION. ACCEPTED. -2s',2)));
+      const tos=d.querySelector('#tos');tos.addEventListener('scroll',()=>{if(tos.scrollTop+tos.clientHeight>=tos.scrollHeight-6)acc.disabled=false},{passive:true})}})},
+  function upsell(){renderMenu();openModal({title:'MENU PREMIUM™',body:'Unlock the Back button, ad-free menus and 3 bonus submenus for just £9.99/month.<br><small>Cancel anytime in Settings › Billing › Legal › Sorry › Cancel.</small>',
+    build(a){shuffle([["SUBSCRIBE",'prime',0],["START FREE TRIAL",'',0],["No thanks, I enjoy suffering",'',1]]).forEach(([l,c,g])=>a.appendChild(mk(l,'big '+c,()=>g?reward('PREMIUM DECLINED. RESPECT. +1.5s',1.5,60):punish(l==='SUBSCRIBE'?'SUBSCRIBED. CANCELLATION IS IN A MENU. -2s':'TRIAL STARTED. IT IS NOT FREE. -2s',2))))}})},
+  function inception(){renderMenu();let depth=1;const show=()=>openModal({title:`DIALOG ${depth} OF 3`,warn:depth===3,body:depth<3?'Open the next dialog?':'Final dialog. Close all dialogs?',
+    build(a){yesNo(a,'YES',()=>{if(depth<3){depth++;show()}else reward('DIALOG INCEPTION COMPLETE +2s',2,90)},()=>punish('DIALOGS CANNOT BE REFUSED -2s',2))}});show()},
+  function math(){renderMenu();const x=2+Math.floor(Math.random()*7),y=2+Math.floor(Math.random()*7),ans=x+y;
+    openModal({title:'SECURITY CHECK',warn:true,body:`To continue, what is <b>${x} + ${y}</b>?`,
+      build(a){const row=document.createElement('div');row.className='row';shuffle([String(ans),String(ans+1),`${x}${y}`,'Fish']).forEach(l=>row.appendChild(mk(l,'big',()=>l===String(ans)?reward('MATHS ACCEPTED +1s',1,40):punish(l==='Fish'?'FISH IS NOT A NUMBER. YET. -2s':'MATHS REJECTED -2s',2))));a.appendChild(row)}})},
+  function fakeOver(){renderMenu();openModal({title:'SYSTEM HALTED',warn:true,body:'<b id="fk">GAME OVER. FINAL SCORE: 0</b>',
+    build(a){const b=mk('…','big',()=>{});b.disabled=true;a.appendChild(b);sfx.over();const id=S.menuId;
+      setTimeout(()=>{if(!S.modal||id!==S.menuId)return;const fk=$('#fk');if(fk)fk.textContent='JUST KIDDING. THE MENUS NEED YOU.';b.disabled=false;b.textContent='PHEW';b.onclick=()=>reward('PRANKED. +2s FOR YOUR TROUBLE',2,30);b.focus()},1000)}})},
+  function loot(){renderMenu();const it=rollItem(false);openModal({title:'A WILD COLLECTABLE APPEARED',body:'Something shiny fell out of the menu. Grab it before it falls into Miscellaneous.',
+    build(a){const id=S.menuId;a.appendChild(mk('GRAB IT','big prime',()=>{const nw=grant(it);S.runItems.push(it);closeModal();sfx.rarity(ITEM[it].r);toast(`GOT: ${it.toUpperCase()}${nw?' · NEW!':''}`)}));
+      a.appendChild(mk('Leave it','big',()=>{closeModal();toast('IT ROLLED INTO MISCELLANEOUS. GONE.')}));
+      setTimeout(()=>{if(S.modal&&id===S.menuId&&$('#modal').textContent.includes('WILD')){closeModal();toast('TOO SLOW. IT ESCAPED.')}},1800)}})}
+];
+function shuffleNow(){renderMenu();const id=S.menuId;setTimeout(()=>{if(id!==S.menuId||!S.running)return;shuffle(S.opts);renderMenu(true);sfx.shuffle();toast('MENU REORGANISED FOR YOUR CONVENIENCE')},450)}
+function loadingNow(){S.loading=true;const list=$('#list');list.className='list';
+  $('#wtitle').textContent='PLEASE WAIT';list.innerHTML='<div class="loading"><span id="lt">LOADING MENU… 0%</span><div class="prog"><i id="lp"></i></div></div>';
+  const id=++S.menuId;let p=0;const iv=setInterval(()=>{if(id!==S.menuId){clearInterval(iv);return}p=p<99?Math.min(99,p+17+Math.floor(Math.random()*20)):99;
+    const lt=$('#lt'),lp=$('#lp');if(lt){lt.textContent='LOADING MENU… '+p+'%';lp.style.width=p+'%'}sfx.nav()},110);
+  setTimeout(()=>{clearInterval(iv);if(id!==S.menuId||!S.running)return;S.loading=false;renderMenu()},1100)}
+
+/* ---------- COLLECTION + MENU BOX ---------- */
+let sel=null,collFrom='#title';
+function showColl(from){collFrom=from||collFrom;showOnly('#coll');renderColl()}
+function renderColl(){
+  const own=ownedCount(),perks=ITEMS.filter(i=>i[3]&&P.col[i[0]]>0).length;
+  $('#chead').innerHTML=`<span>FOUND <b>${own}/${ITEMS.length}</b></span><span>PERKS <b>${perks}</b></span><span>MENU BUCKS <b>${fmt(P.bucks)}</b></span>`;
+  $('#cmeter').style.width=(own/ITEMS.length*100)+'%';
+  const b=$('#cbox');b.textContent=`OPEN MENU BOX · ${BOX_COST} MB`;b.disabled=P.bucks<BOX_COST;
+  if(!sel)sel=ITEMS.find(i=>P.col[i[0]]>0)?.[0]||ITEMS[0][0];
+  fillCard($('#cdetail'),sel,P.col[sel]);
+  const g=$('#cgrid');g.innerHTML='';
+  ITEMS.forEach(([n,r,,p])=>{const own=P.col[n]>0;const t=document.createElement('button');t.type='button';t.className='tile'+(own?'':' locked')+(n===sel?' sel':'')+(own&&p?' perk':'');
+    t.style.setProperty('--rc',own?RVAR[r]:'var(--panel-lo)');const cv=document.createElement('canvas');drawItem(cv,n,!own);
+    const sp=document.createElement('span');sp.textContent=own?n:'???';t.append(cv,sp);
+    t.onclick=()=>{sel=n;sfx.nav();renderColl()};g.appendChild(t)});
+}
+let boxBusy=false;
+function showBox(){showOnly('#box');$('#mbox').hidden=false;$('#mbox').textContent='?';$('#mbox').style.background='';$('#breveal').hidden=true;$('#btitle').textContent='MENU BOX';
+  $('#bsub').textContent=`CONTAINS ONE (1) MENU ITEM. PROBABLY. · YOU HAVE ${fmt(P.bucks)} MB`;
+  const b=$('#bagain');b.textContent=`OPEN · ${BOX_COST} MB`;b.disabled=P.bucks<BOX_COST}
+function openBox(){
+  if(boxBusy||P.bucks<BOX_COST)return;boxBusy=true;audio();P.bucks-=BOX_COST;save();
+  const mb=$('#mbox'),rv=$('#breveal');rv.hidden=true;mb.hidden=false;mb.textContent='?';mb.style.background='';mb.classList.add('shake');
+  $('#bagain').disabled=true;$('#bback').disabled=true;$('#btitle').textContent='OPENING…';sfx.roll();
+  $('#bsub').textContent=pick(['CONSULTING THE MENU GODS…','SHAKING THE DROPDOWN…','BRIBING THE ALGORITHM…','ASKING THE FRIDGE…']);
+  setTimeout(()=>{
+    mb.classList.remove('shake');const it=rollItem(false),r=ITEM[it].r,nw=grant(it);
+    if(!nw){P.bucks+=25;save()}
+    mb.style.background=RVAR[r];mb.textContent='!';mb.classList.remove('open');void mb.offsetWidth;mb.classList.add('open');burst(mb,26);
+    $('#btitle').textContent=nw?'NEW ITEM!':'DUPLICATE';
+    $('#bsub').textContent=(nw?RNAME[r]+' · ':'REFUNDED 25 MB · ')+`YOU HAVE ${fmt(P.bucks)} MB`;
+    fillCard(rv,it,P.col[it]);rv.hidden=false;sfx.rarity(r);sel=it;
+    const b=$('#bagain');b.textContent=`OPEN ANOTHER · ${BOX_COST} MB`;b.disabled=P.bucks<BOX_COST;$('#bback').disabled=false;boxBusy=false;
+  },1300);
+}
+
+/* ---------- TITLE MENU ---------- */
+function titleMain(){const m=$('#tmenu');m.innerHTML='';
+  m.append(mk('▸ START GAME','big prime',startGame),
+    mk(`COLLECTABLES ${ownedCount()}/${ITEMS.length}`,'big',()=>{sfx.nav();showColl('#title')}),
+    mk('OPTIONS','big',()=>{sfx.nav();titleOpts()}),
+    mk('EXIT','big',()=>{sfx.wrong();shake();toast('THERE IS NO EXIT. ONLY MENUS.')}));
+  $('#tbest').innerHTML=`BEST <b>${fmt(P.best)}</b> · MENU BUCKS <b>${fmt(P.bucks)}</b><br>LIFETIME MENUS OPENED <b>${fmt(P.menus)}</b>${S.insane?' · <b>INSANE MODE</b>':''}`+(P.welcome?'<br>WELCOME GIFT: 150 MB FOR A FREE MENU BOX':'');
+  setTimeout(()=>m.querySelector('button').focus({preventScroll:true}),30)}
+function titleOpts(){const m=$('#tmenu');m.innerHTML='';
+  const s=mk('SOUND: '+(muted?'OFF':'ON'),'big',()=>{setMute(!muted);s.textContent='SOUND: '+(muted?'OFF':'ON');sfx.nav()});
+  const d=mk('DIFFICULTY: '+(S.insane?'INSANE':'NORMAL'),'big',()=>{S.insane=!S.insane;store.set('ms26-insane',S.insane);d.textContent='DIFFICULTY: '+(S.insane?'INSANE':'NORMAL');sfx.nav();if(S.insane)toast('INSANE: DEEPER MENUS, MORE CHAOS, 2× POINTS')});
+  let depth=0;const o=mk('OPTIONS','big',()=>{depth++;sfx.nav();o.textContent='OPTIONS'+' ›'.repeat(Math.min(depth,6));toast(depth<5?'YOU ARE ALREADY IN OPTIONS. GOING DEEPER…':'THERE IS NOTHING DOWN HERE. EXCEPT YOU.')});
+  m.append(s,d,o,mk('◄ BACK','big',()=>{sfx.nav();titleMain()}))}
+function showTitle(){S.running=false;S.token++;S.menuId++;S.modal=false;document.body.classList.remove('frenzy');showOnly('#title');titleMain();cycleQuote()}
+function cycleQuote(){const q=$('#tquote');q.innerHTML='';const sm=document.createElement('small');const qi=Math.floor(Math.random()*WISDOM.length);sm.textContent=`PEARL OF WISDOM #${qi+1}`;q.append(sm,WISDOM[qi])}
+setInterval(()=>{if(!$('#title').hidden)cycleQuote()},4500);
+
+/* ---------- WIRING ---------- */
+$('#mute').onclick=()=>{setMute(!muted);sfx.nav()};
+$('#tbx').onclick=()=>{if(!S.running||S.paused||S.modal)return;S.time-=1;S.combo=0;sfx.wrong();shake();toast('THE X IS DECORATIVE. -1s');hud()};
+$('#again').onclick=startGame;
+$('#tomenu').onclick=()=>{sfx.nav();showTitle()};
+$('#ocoll').onclick=()=>{sfx.nav();showColl('#over')};
+$('#cback').onclick=()=>{sfx.nav();if(collFrom==='#over')showOnly('#over');else showTitle()};
+$('#cbox').onclick=()=>{sfx.nav();P.welcome=false;showBox()};
+$('#bagain').onclick=openBox;
+$('#bback').onclick=()=>{if(boxBusy)return;sfx.nav();showColl()};
+$('#copy').onclick=()=>{const t=`I scored ${fmt(S.score)} in MENU SIMULATOR 2K26 (${S.level} tasks, ${S.runMenus} menus, ${ownedCount()}/${ITEMS.length} collectables). The menus won.`;
+  try{navigator.clipboard.writeText(t).then(()=>toast('COPIED. SHARE YOUR SHAME.'),()=>toast('COPY BLOCKED. SCREENSHOT IT, LIKE OUR ANCESTORS.'))}catch(e){toast('COPY BLOCKED. SCREENSHOT IT, LIKE OUR ANCESTORS.')}};
+document.addEventListener('keydown',e=>{
+  if(S.running&&!S.paused&&!S.modal&&!S.loading&&/^[1-9]$/.test(e.key)){const b=$('#list').children[+e.key-1];if(b&&b.tagName==='BUTTON'){e.preventDefault();b.click()}}
+  else if(e.key==='Enter'&&!$('#inter').hidden){$('#inter').click()}
+});
+setMute(muted);hud();pointyLoop();showTitle();
+})();
+</script>
+
+</body>
+</html>
