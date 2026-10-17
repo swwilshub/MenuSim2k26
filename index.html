@@ -174,10 +174,10 @@ button{font:inherit;touch-action:manipulation}
 .mbox.open{animation:popin .2s steps(3)}
 .drop{display:flex;gap:10px;align-items:center}
 
-#toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 70px);transform:translateX(-50%);z-index:80;max-width:calc(100% - 32px);
+#toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);transform:translateX(-50%);z-index:80;width:min(calc(100% - 32px),488px);
   background:var(--hi);color:var(--ink);font-family:var(--f-display);font-size:12px;letter-spacing:.04em;padding:8px 12px;box-shadow:0 0 0 2px var(--ink),4px 4px 0 var(--ink);text-align:center;pointer-events:none;opacity:0}
 #toast.show{animation:toast 1.7s steps(8) both}
-@keyframes toast{0%{opacity:0;transform:translate(-50%,-10px)}10%,85%{opacity:1;transform:translate(-50%,0)}100%{opacity:0}}
+@keyframes toast{0%{opacity:0;transform:translate(-50%,10px)}10%,85%{opacity:1;transform:translate(-50%,0)}100%{opacity:0}}
 .float{position:fixed;z-index:90;pointer-events:none;font-family:var(--f-display);font-weight:700;font-size:16px;color:var(--hi);text-shadow:2px 2px 0 var(--ink);animation:floatup .7s steps(6) forwards}
 .float.minus{color:var(--bad)}
 @keyframes floatup{to{transform:translateY(-44px);opacity:0}}
