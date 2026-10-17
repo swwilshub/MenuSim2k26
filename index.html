@@ -27,9 +27,8 @@ body{height:100%;margin:0;overflow:hidden;color:var(--paper);font-family:var(--f
   background-image:linear-gradient(var(--bg2) 2px,transparent 2px),linear-gradient(90deg,var(--bg2) 2px,transparent 2px);
   background-size:32px 32px;animation:grid 5s linear infinite;
   -webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
-body.frenzy{animation:grid .7s linear infinite,frz .24s steps(1) infinite}
+body.frenzy{background-color:var(--frz)}
 @keyframes grid{to{background-position:32px 32px}}
-@keyframes frz{50%{background-color:var(--frz)}}
 body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:200;
   background:repeating-linear-gradient(0deg,rgba(0,0,0,.14) 0 1px,transparent 1px 3px)}
 button{font:inherit;touch-action:manipulation}
@@ -43,16 +42,15 @@ button{font:inherit;touch-action:manipulation}
 .hud b{color:var(--hi);font-weight:700}
 .hud .grow{flex:1}
 .combo{color:var(--cyan)}
-.combo.fr{color:var(--hi);animation:blink .25s steps(1) infinite}
+.combo.fr{color:var(--hi)}
 .combo.pump{animation:pump .25s}
 @keyframes pump{50%{transform:scale(1.5)}}
 .mute{background:var(--bg2);color:var(--paper);border:2px solid var(--ink);font-family:var(--f-display);font-size:12px;padding:4px 8px;cursor:pointer}
 
 .timebar{height:18px;border:2px solid var(--ink);background:var(--bg2);box-shadow:3px 3px 0 var(--ink)}
 .timebar i{display:block;height:100%;width:100%;background:repeating-linear-gradient(90deg,var(--good) 0 10px,transparent 10px 12px)}
-.timebar.low i{background:repeating-linear-gradient(90deg,var(--bad) 0 10px,transparent 10px 12px);animation:blink .4s steps(1) infinite}
+.timebar.low i{background:repeating-linear-gradient(90deg,var(--bad) 0 10px,transparent 10px 12px)}
 .timebar.fr i{background:repeating-linear-gradient(90deg,var(--hi) 0 10px,var(--epic) 10px 12px)}
-@keyframes blink{50%{opacity:.35}}
 
 .goal{background:var(--ink);border:2px solid var(--hi);padding:8px 10px;display:flex;flex-direction:column;gap:6px;box-shadow:3px 3px 0 var(--bg2)}
 .goal.mega{border-color:var(--epic);box-shadow:3px 3px 0 var(--epic)}
@@ -62,7 +60,7 @@ button{font:inherit;touch-action:manipulation}
 .crumbs.dense{font-size:17px}
 .crumb{padding:0 5px;background:var(--bg2);color:var(--paper)}
 .crumb.done{background:var(--good);color:var(--ink)}
-.crumb.now{background:var(--hi);color:var(--ink);animation:blink .7s steps(1) infinite}
+.crumb.now{background:var(--hi);color:var(--ink);box-shadow:0 0 0 2px var(--paper)}
 .sep{color:var(--panel-lo)}
 
 .win{flex:1;min-height:0;display:flex;flex-direction:column;background:var(--panel);color:var(--ink);
@@ -124,7 +122,7 @@ button{font:inherit;touch-action:manipulation}
 .stats dt{font-family:var(--f-display);font-size:11px;align-self:center}
 .stats dd{margin:0;text-align:right}
 .rank{grid-column:1/-1;text-align:center;background:var(--ink);color:var(--hi);font-family:var(--f-display);font-size:13px;padding:6px}
-.newbest{color:var(--bad);font-family:var(--f-display);font-size:11px;animation:blink .5s steps(1) infinite}
+.newbest{color:var(--bad);font-family:var(--f-display);font-size:11px}
 .hint{font-family:var(--f-display);font-size:9px;letter-spacing:.1em;color:var(--panel);line-height:1.6}
 .hint b{color:var(--hi);font-weight:400}
 
@@ -169,8 +167,8 @@ button{font:inherit;touch-action:manipulation}
 .btnrow .btn{flex:1 1 150px}
 .mbox{width:140px;height:140px;display:grid;place-items:center;background:var(--hi);color:var(--ink);font-family:var(--f-display);font-weight:700;font-size:80px;
   box-shadow:inset -6px -6px 0 rgba(0,0,0,.25),inset 6px 6px 0 rgba(255,255,255,.4),0 0 0 3px var(--ink),8px 8px 0 var(--ink)}
-.mbox.shake{animation:wob .09s steps(2) infinite}
-@keyframes wob{50%{transform:rotate(7deg) scale(1.06)}}
+.mbox.shake{animation:wob .6s ease-in-out infinite alternate}
+@keyframes wob{from{transform:rotate(-4deg)}to{transform:rotate(4deg)}}
 .mbox.open{animation:popin .2s steps(3)}
 .drop{display:flex;gap:10px;align-items:center}
 
@@ -188,21 +186,20 @@ button{font:inherit;touch-action:manipulation}
 body.fx-comic,body.fx-comic *{font-family:"Comic Sans MS","Comic Neue","Chalkboard SE",cursive!important;letter-spacing:0!important}
 body.fx-dark #app{--panel:#26252e;--panel-hi:#43414f;--panel-lo:#0b0a10;--ink:#ebe7d9}
 body.fx-dark .btn:hover{color:#0d0d16}
-body.fx-hue .win,body.fx-hue .goal{animation:huey 2s linear infinite}
-@keyframes huey{to{filter:hue-rotate(360deg)}}
-body.fx-haunt .win{animation:haunt 1.3s steps(1) infinite}
-@keyframes haunt{0%,70%{opacity:1}72%{opacity:.2}76%{opacity:.9}80%{opacity:.35}84%{opacity:1}}
+body.fx-hue .win,body.fx-hue .goal{filter:hue-rotate(150deg)}
+body.fx-haunt .win{animation:haunt 3s ease-in-out infinite alternate}
+@keyframes haunt{from{transform:rotate(-1deg)}to{transform:rotate(1deg)}}
 body.fx-float .item{animation:floaty 1.3s ease-in-out infinite alternate}
 body.fx-float .item:nth-child(odd){animation-delay:-.65s}
 @keyframes floaty{to{transform:translateY(-9px) rotate(-2deg)}}
-body.fx-jet #app{animation:jet .08s steps(2) infinite}
-@keyframes jet{50%{transform:translate(2px,-2px)}}
+body.fx-jet #app{animation:jet 1.2s ease-in-out infinite alternate}
+@keyframes jet{from{transform:translateX(-3px)}to{transform:translateX(3px)}}
 body.fx-small .list .btn{font-size:15px;padding:3px 8px}
 body.fx-small .crumbs{font-size:14px}
 body.fx-spin #app{animation:spin .9s steps(12)}
 @keyframes spin{to{transform:rotate(360deg)}}
-body.fx-off #app{animation:crt .8s steps(4)}
-@keyframes crt{0%{transform:scaleY(1)}30%{transform:scaleY(.02)}60%{transform:scaleY(.02);opacity:0}100%{transform:scaleY(1);opacity:1}}
+body.fx-off #app{animation:crt 1.4s ease-in-out}
+@keyframes crt{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.4)}}
 .crumbs.voided .crumb:not(.now){color:transparent;background:var(--bg2)}
 .fxline{font-family:var(--f-display);font-size:9px;letter-spacing:.06em;color:var(--good);line-height:1.4}
 .fxline:empty{display:none}
@@ -475,7 +472,7 @@ function applyLeaf(name){const e=FX[name];if(!e)return '';
   const r=e.run?e.run():null;return (typeof r==='string'?r:e.m)||''}
 function applyFx(){const f=S.fx,b=document.body;
   ['comic','dark','hue','haunt','float','jet','small'].forEach(k=>b.classList.toggle('fx-'+k,!!f[k]&&S.running));
-  const fl=[];if(f.grey)fl.push('grayscale(1)');if(f.invert)fl.push('invert(1) hue-rotate(180deg)');if(f.bright)fl.push('brightness(1.4) saturate(1.6)');if(f.sun)fl.push('brightness(1.9) contrast(.75)');
+  const fl=[];if(f.grey)fl.push('grayscale(1)');if(f.invert)fl.push('hue-rotate(180deg)');if(f.bright)fl.push('brightness(1.15) saturate(1.3)');if(f.sun)fl.push('brightness(1.25) contrast(.85) sepia(.3)');
   $('#app').style.filter=S.running&&fl.length?fl.join(' '):'';
   $('#fxline').textContent=S.running?Object.keys(f).filter(k=>FXLABEL[k]).map(k=>'● '+FXLABEL[k]+(f[k]>=99?'':' ('+f[k]+')')).join('  '):''}
 function who(){if(S.fx.toaster)return 'THE TOASTER';if(S.fx.pigeon)return 'A PIGEON';const w=pick(WHO);
@@ -704,7 +701,7 @@ function completeTask(){
   requestAnimationFrame(()=>requestAnimationFrame(()=>{pr.style.transition=`width ${ms/1000-.1}s steps(12)`;pr.style.width='100%'}));
   const go=()=>{if(tok!==S.token||$('#inter').hidden)return;$('#inter').hidden=true;S.paused=false;S.lastT=performance.now();
     applyFx();
-    if(S.onceFx){const c='fx-'+S.onceFx;S.onceFx=null;document.body.classList.add(c);sfx.shuffle();setTimeout(()=>document.body.classList.remove(c),950)}
+    if(S.onceFx){const c='fx-'+S.onceFx;S.onceFx=null;document.body.classList.add(c);sfx.shuffle();setTimeout(()=>document.body.classList.remove(c),1500)}
     if(S.snoozeNext){S.snoozeNext=false;S.snoozeUntil=performance.now()+4000;toast('SNOOZING… TIMER FROZEN 4s',true)}
     if(S.pendingFrenzy){S.pendingFrenzy=false;S.frenzyUntil=performance.now()+9000;toast('MENU FRENZY · 3× POINTS · NO CHAOS · TIME FROZEN');sfx.frenzy()}
     newTask()};
