@@ -156,20 +156,15 @@ button{font:inherit;touch-action:manipulation}
 .collhead b{color:var(--hi);font-weight:400}
 .meter{width:min(100%,520px);height:14px;border:2px solid var(--ink);background:var(--bg2)}
 .meter i{display:block;height:100%;background:repeating-linear-gradient(90deg,var(--hi) 0 6px,transparent 6px 8px)}
-.grid{width:min(100%,520px);display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:8px}
+.grid{width:min(100%,520px);display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px}
 .tile{--rc:var(--panel);background:var(--ink);border:3px solid var(--rc);padding:6px 3px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;color:var(--paper);font-family:var(--f-body);font-size:14px;line-height:1;min-width:0}
-.tile canvas{width:40px;height:40px;image-rendering:pixelated}
-.tile span{overflow-wrap:anywhere;text-align:center}
+.tile canvas{width:48px;height:48px;image-rendering:pixelated}
+.tile span{overflow-wrap:break-word;hyphens:auto;text-align:center;max-width:100%}
 .tile.locked{border-color:var(--panel-lo);color:var(--panel-lo)}
 .tile.sel{outline:3px solid var(--paper);outline-offset:1px}
 .tile.perk::after{content:"PERK";font-family:var(--f-display);font-size:7px;color:var(--ink);background:var(--rc);padding:1px 3px}
 .btnrow{width:min(100%,520px);display:flex;gap:8px;flex-wrap:wrap}
 .btnrow .btn{flex:1 1 150px}
-.mbox{width:140px;height:140px;display:grid;place-items:center;background:var(--hi);color:var(--ink);font-family:var(--f-display);font-weight:700;font-size:80px;
-  box-shadow:inset -6px -6px 0 rgba(0,0,0,.25),inset 6px 6px 0 rgba(255,255,255,.4),0 0 0 3px var(--ink),8px 8px 0 var(--ink)}
-.mbox.shake{animation:wob .6s ease-in-out infinite alternate}
-@keyframes wob{from{transform:rotate(-4deg)}to{transform:rotate(4deg)}}
-.mbox.open{animation:popin .2s steps(3)}
 .drop{display:flex;gap:10px;align-items:center}
 
 #toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);transform:translateX(-50%);z-index:80;width:min(calc(100% - 32px),488px);
@@ -181,6 +176,34 @@ button{font:inherit;touch-action:manipulation}
 @keyframes floatup{to{transform:translateY(-44px);opacity:0}}
 .px{position:fixed;z-index:89;width:8px;height:8px;pointer-events:none;animation:burst .5s steps(5) forwards}
 @keyframes burst{to{transform:translate(var(--dx),var(--dy));opacity:0}}
+
+/* gacha stage */
+.banner{width:min(100%,520px);background:linear-gradient(90deg,var(--epic),var(--hi));color:var(--ink);font-family:var(--f-display);font-size:10px;letter-spacing:.06em;padding:6px 8px;box-shadow:0 0 0 2px var(--ink),4px 4px 0 var(--ink)}
+.stage{position:relative;width:240px;height:230px;perspective:700px;flex:none}
+.rays{--rc:var(--hi);position:absolute;left:50%;top:50%;width:420px;height:420px;margin:-210px 0 0 -210px;border-radius:50%;opacity:0;pointer-events:none;
+  background:repeating-conic-gradient(from 0deg,var(--rc) 0 9deg,transparent 9deg 30deg);
+  -webkit-mask:radial-gradient(circle,#000 18%,transparent 62%);mask:radial-gradient(circle,#000 18%,transparent 62%);
+  animation:rays 20s linear infinite;transition:opacity .8s ease}
+@keyframes rays{to{transform:rotate(360deg)}}
+.cube{--rc:var(--hi);position:absolute;left:65px;top:60px;width:110px;height:110px;transform-style:preserve-3d}
+.cube .f{position:absolute;inset:0;display:grid;place-items:center;background:var(--rc);color:var(--ink);font-family:var(--f-display);font-weight:700;font-size:30px;font-style:normal;
+  border:5px solid rgba(0,0,0,.22);box-shadow:inset 0 0 0 4px rgba(255,255,255,.28);transition:background .9s ease,transform .8s cubic-bezier(.2,.7,.3,1),opacity .8s ease;backface-visibility:visible}
+.cube .f1{transform:translateZ(55px)}.cube .f2{transform:rotateY(180deg) translateZ(55px);font-size:20px}
+.cube .f3{transform:rotateY(90deg) translateZ(55px)}.cube .f4{transform:rotateY(-90deg) translateZ(55px);font-size:20px}
+.cube .f5{transform:rotateX(90deg) translateZ(55px)}.cube .f6{transform:rotateX(-90deg) translateZ(55px)}
+.cube.burst .f1{transform:translateZ(260px) rotateX(50deg);opacity:0}.cube.burst .f2{transform:rotateY(180deg) translateZ(260px) rotateZ(40deg);opacity:0}
+.cube.burst .f3{transform:rotateY(90deg) translateZ(260px) rotateX(-40deg);opacity:0}.cube.burst .f4{transform:rotateY(-90deg) translateZ(260px) rotateX(30deg);opacity:0}
+.cube.burst .f5{transform:rotateX(90deg) translateZ(320px) rotateZ(90deg);opacity:0}.cube.burst .f6{transform:rotateX(-90deg) translateZ(200px);opacity:0}
+.prize{position:absolute;left:50%;top:50%;width:112px;height:112px;margin:-56px 0 0 -56px;display:grid;place-items:center;opacity:0;transform:scale(.1)}
+.prize.show{opacity:1;transform:scale(1);transition:transform .5s cubic-bezier(.3,1.8,.5,1),opacity .2s}
+.prize canvas{width:112px;height:112px;image-rendering:pixelated;filter:drop-shadow(4px 4px 0 var(--ink))}
+.hype{min-height:2.6em;font-family:var(--f-display);font-size:13px;letter-spacing:.04em;color:var(--hi);max-width:30ch;line-height:1.4}
+.pity{font-family:var(--f-display);font-size:9px;letter-spacing:.08em;color:var(--cyan)}
+.grid.pull10{grid-template-columns:repeat(5,minmax(0,1fr))}
+.tile .new{font-family:var(--f-display);font-size:7px;color:var(--ink);background:var(--good);padding:1px 3px}
+.rates{width:100%;border-collapse:collapse;font-size:19px}
+.rates td{padding:2px 4px;border-bottom:1px solid var(--panel-lo)}
+.rates td:last-child{text-align:right;font-variant-numeric:tabular-nums}
 
 /* in-game effects from menu actions */
 body.fx-comic,body.fx-comic *{font-family:"Comic Sans MS","Comic Neue","Chalkboard SE",cursive!important;letter-spacing:0!important}
@@ -207,8 +230,9 @@ body.fx-off #app{animation:crt 1.4s ease-in-out}
 .fxmsg:empty{display:none}
 
 @media (prefers-reduced-motion:reduce){
+  .rays,.prize.show{animation:none;transition:none}
   body.fx-hue .win,body.fx-hue .goal,body.fx-haunt .win,body.fx-float .item,body.fx-jet #app,body.fx-spin #app,body.fx-off #app{animation:none}
-  body,body.frenzy,.pointy canvas,.logo em,.crumb.now,.mbox.shake{animation:none}
+  body,body.frenzy,.pointy canvas,.logo em,.crumb.now{animation:none}
   #app.shake,.list.in .item,.dialog,.px{animation:none}
   .px{display:none}
 }
@@ -284,12 +308,25 @@ body.fx-off #app{animation:crt 1.4s ease-in-out}
 </div>
 
 <div class="screen" id="box" hidden>
+  <div class="banner" id="bbanner">★ LIMITED BANNER ★ GOLDEN BACK BUTTON · RATE-UP: 0.0001% → 0.0002%</div>
   <p class="big-msg" id="btitle" style="color:var(--hi)">MENU BOX</p>
-  <div class="sub" id="bsub">CONTAINS ONE (1) MENU ITEM. PROBABLY.</div>
-  <div class="mbox" id="mbox">?</div>
+  <div class="sub" id="bsub"></div>
+  <div class="stage" aria-hidden="true">
+    <div class="rays" id="rays"></div>
+    <div class="cube" id="cube"><i class="f f1">?</i><i class="f f2">MENU</i><i class="f f3">?</i><i class="f f4">BOX</i><i class="f f5">★</i><i class="f f6">?</i></div>
+    <div class="prize" id="prize"></div>
+  </div>
+  <div class="hype" id="hype" aria-live="polite">TAP OPEN. FEEL HOPE. RECEIVE CHECKBOX.</div>
   <div class="card" id="breveal" hidden></div>
-  <div class="btnrow" style="max-width:360px">
-    <button class="btn big prime" id="bagain" type="button">OPEN</button>
+  <div class="grid pull10" id="bgrid" hidden></div>
+  <div class="pity" id="bpity"></div>
+  <div class="btnrow">
+    <button class="btn big prime" id="bopen" type="button">OPEN ×1</button>
+    <button class="btn big" id="bopen10" type="button">OPEN ×10</button>
+  </div>
+  <div class="btnrow">
+    <button class="btn big" id="bskip" type="button" hidden>SKIP ANIMATION</button>
+    <button class="btn big" id="brates" type="button">DROP RATES</button>
     <button class="btn big" id="bback" type="button">◄ BACK</button>
   </div>
 </div>
@@ -479,37 +516,70 @@ function who(){if(S.fx.toaster)return 'THE TOASTER';if(S.fx.pigeon)return 'A PIG
   if(w==='THE SMART FRIDGE'&&S.fridgeName)return S.fridgeName+' (FRIDGE)';if(w==='YOUR NAN'&&S.nanMuted)return 'YOUR NAN (MUTED)';return w}
 const TERMS=["1. By looking at this menu you agree to the menu.","2. The menu may contain additional menus, which you also agree to.","3. MenuCorp may change these Terms at any time, including during this sentence.","4. You grant MenuCorp a perpetual licence to your thumb.","5. Cookies are not food. Food is not cookies. Do not eat the banner.","6. The Back button is provided as is, and as is not.","7. Any resemblance to a usable interface is coincidental.","8. You waive your right to a search bar.","9. Disputes will be settled by a dropdown of 400 countries.","10. The Fridge has read these Terms. Have you?","11. Clause 11 intentionally left confusing.","12. If you have scrolled this far, you may proceed. Well done. Nobody does."];
 
-/* collectables: [name, rarity, flavour, perk key, perk text] */
-const ITEMS=[
-["Bent Paperclip","C","It wanted to help. It never could."],["Dusty Checkbox","C","Ticked once in 2009."],["Loose Radio Button","C","Only one of you can be selected."],
-["Greyed-Out Button","C","Still has dreams."],["Cookie Crumb","C","Evidence of consent."],["Tooltip Fragment","C","This setting does what it"],
-["Spare Ellipsis","C","…"],["Generic Gear Icon","C","It is always a gear."],["Hamburger Bun","C","The patty is in another menu."],
-["Default Wallpaper","C","Rolling green hills, eternal."],["Lost Keybind","C","Was bound to F13."],["Used Progress Bar","C","Only 1% left on it."],
-["Single Breadcrumb","C","Leads nowhere. Delicious."],["Placeholder Text","C","Lorem? I hardly know 'em."],["Separator Line","C","Divides menus. Unites people."],
-["Unread Notification","C","(1)"],["Old Changelog","C","Bug fixes and improvements."],["Toggle Spring","C","Boing."],
-["Shiny Scrollbar","R","Smooth. Too smooth."],["Hover State","R","Only exists when you look at it."],["Shortcut Scroll","R","Ctrl+Alt+Menu."],
-["Right-Click Relic","R","Contains Inspect Element."],["Tab Key of Focus","R","Moves you forward. Spiritually."],["Accordion Panel","R","Expands on request. Plays no music."],
-["Modal of Mild Concern","R","Are you sure? Medium sure?"],["Breadcrumb Trail","R","Finally, a way home. It is blocked."],["Unsaved Changes","R","Will be lost. Gracefully."],
-["Lucky Checkbox","R","Ticked by fate.","luck","+10% item drop chance"],["Pointy's Spare Glove","R","Pointy has no hands. Suspicious."],
-["Settings Snow Globe","R","Shake to reset to defaults."],["Bookmark of Intent","R","You will read it later. You won't."],
-["Combo Crystal","E","Hums at x10.","crystal","Wrong taps halve your combo instead of resetting it"],
-["Cookie Jar of Refusal","E","Contains zero accepted cookies.","cookie","Reject All is no longer tiny"],
-["Extended Timebar","E","Longer. Not better. Longer.","timebar","+10s maximum time"],
-["Menu Magnet","E","Attracts Bucks and lint.","magnet","+25% Menu Bucks"],
-["Infinite Scroll","E","Has no bottom. Has no peace."],["Mega Dropdown","E","400 countries and one Atlantis."],
-["Context Menu","E","Right for every occasion."],["Pixel-Perfect Margin","E","Exactly 16px. Every time."],
-["The Fourth Option","E","Of three."],["Dark Mode Shard","E","Absorbs judgement."],
-["Golden Back Button","L","It still doesn't help. But it's gold.","back","Back no longer costs time"],
-["Chrono Toggle","L","Flips time. Gently.","chrono","+5s starting time"],
-["Crown of Preferences","L","Heavy is the head that sets defaults.","crown","Task bonus +50%"],
-["The Original Settings","L","First of its kind. Contains a smaller one."],["Kettle's Blessing","L","Steam with purpose."],
-["Knob That Goes to 11","L","Goes to 12 when no one is looking."],["Pointy Plushie","L","Official merch. Squeaks on click."],
-["Cursed Dropdown","X","It opens upward. Always.","cursed","Double points, but 50% more chaos"],
-["Haunted Hamburger","X","Something moves in the bun.","haunted","+50% score, but one extra decoy per menu"],
-["Eternal Spinner","X","Still spinning. Always will."],["Signed Terms","X","You agreed to everything. Everything."],
-["The Unclosable Popup","X","There was never an X."],["Reply-All Amulet","X","Notifies 4,000 colleagues of nothing."]
+/* collectables: every one is a menu or UI item. [name, rarity, flavour, thumbnail kind, variant, perk key, perk text] */
+const GOLD={a:'#ffd21f'},RED={a:'#ff4238'};
+const DEFS=[
+["Unticked Checkbox","C","Full of potential. Empty of ticks.","checkbox",{on:0}],
+["Ticked Checkbox","C","Ticked once in 2009. Never unticked.","checkbox",{on:1}],
+["Radio Button","C","Only one of you can be selected.","radio"],
+["Greyed-Out Button","C","Still has dreams.","button",{f:'#9a988f'}],
+["OK Button","C","It has never once been okay.","button",{f:'#3ddc6e',t:'ok'}],
+["Cancel Button","C","Cancels everything except the subscription.","button",{f:'#ff4238',t:'x'}],
+["Hamburger Icon","C","Three lines. Zero hamburgers.","hamburger"],
+["Kebab Menu","C","Vertical. Unseasoned.","kebab"],
+["Meatballs Menu","C","Horizontal. Al dente.","meatballs"],
+["Ellipsis","C","…","ellipsis"],
+["Generic Gear","C","It is always a gear.","gear"],
+["Close X","C","A suggestion, not a promise.","closex"],
+["Text Field","C","Type here. No, there.","textfield"],
+["Scrollbar","C","Thumb included.","scrollbar"],
+["Breadcrumb","C","Leads nowhere. Delicious.","breadcrumb"],
+["Unread Badge","C","(1)","badge"],
+["Tooltip","C","This setting does what it","tooltip"],
+["Loading Bar (99%)","C","Only 1% left. Forever.","progress",{p:.92}],
+["One Wi-Fi Bar","C","It's trying its best.","wifi",{n:1}],
+["Hourglass Cursor","C","Please wait. Please wait.","hourglass"],
+["Toggle Switch","R","Click it. Click it again. Feel alive.","toggle",{on:1}],
+["Slider","R","Somewhere between 0 and 100. Mostly 47.","slider"],
+["Dropdown","R","Contains options. Hides them.","dropdown"],
+["Search Bar","R","The one thing every menu forgot.","search"],
+["Tab Bar","R","You have 47 open. Close one. You won't.","tabs"],
+["Spinner","R","Still spinning. Always will.","spinner"],
+["Accordion","R","Expands on request. Plays no music.","accordion"],
+["Pagination","R","Page 1 of 1, somehow.","pagination"],
+["Toast Notification","R","Here for 3 seconds. Remembered forever.","toast"],
+["Floppy Save Icon","R","Nobody under 30 knows what this is.","floppy"],
+["Trash Can","R","Contains your unsaved changes.","trash"],
+["Star Rating","R","Five stars. We ignored it.","stars"],
+["Lucky Checkbox","R","Ticked by fate.","checkbox",{on:1,a:'#3ddc6e'},"luck","+10% item drop chance"],
+["Volume Slider (11)","R","Goes to 12 when nobody looks.","volume"],
+["Combo Meter","E","Hums at x10.","meter",null,"crystal","Wrong taps halve your combo instead of resetting it"],
+["Rejected Cookie Banner","E","Contains zero accepted cookies.","cookiebanner",null,"cookie","Reject All is no longer tiny"],
+["Extended Timebar","E","Longer. Not better. Longer.","progress",{p:1,w:1},"timebar","+10s maximum time"],
+["Coin Counter","E","Attracts Menu Bucks and lint.","coin",null,"magnet","+25% Menu Bucks"],
+["Mega Dropdown","E","400 countries and one Atlantis.","dropdown",{long:1}],
+["Context Menu","E","Right for every occasion.","contextmenu"],
+["Date Picker","E","Every date is a Monday.","calendar"],
+["Colour Picker","E","Pick any colour. It will be grey.","colorpicker"],
+["Dark Mode Toggle","E","Absorbs judgement.","toggle",{on:1,dark:1}],
+["CAPTCHA Grid","E","Select all squares containing a menu.","captcha"],
+["Golden Back Button","L","It still doesn't help. But it's gold.","button",{f:'#ffd21f',t:'back'},"back","Back no longer costs time"],
+["Chrono Toggle","L","Flips time. Gently.","toggle",{on:1,a:'#ffd21f'},"chrono","+5s starting time"],
+["Golden Settings Gear","L","Heavy is the gear that sets defaults.","gear",GOLD,"crown","Task bonus +50%"],
+["The Original Settings Window","L","First of its kind. Contains a smaller one.","window"],
+["Infinite Scroll","L","Has no bottom. Has no peace.","scrollbar",{long:1}],
+["A Search Bar That Works","L","Actually finds things. Terrifying.","search",GOLD],
+["Pointy's Cursor","L","Official Pointy merch. Squeaks on click.","cursor"],
+["Cursed Dropdown","X","It opens upward. Always.","dropdown",RED,"cursed","Double points, but 50% more chaos"],
+["Haunted Hamburger Icon","X","Something moves between the lines.","hamburger",RED,"haunted","+50% score, but one extra decoy per menu"],
+["Blue Screen","X",":( Your menu ran into a problem.","bsod"],
+["The Unclosable Popup","X","There was never an X.","window",{nox:1}],
+["Reply-All Button","X","Notifies 4,000 colleagues of nothing.","button",{f:'#ff4238',t:'all'}],
+["Signed Terms Checkbox","X","You agreed to everything. Everything.","checkbox",{on:1,a:'#ff4238'}],
+["Error Dialog","X","An error occurred while displaying the error.","error"]
 ];
-const ITEM={};ITEMS.forEach(([n,r,f,p,pt])=>ITEM[n]={n,r,f,p,pt});
+const ITEMS=DEFS.map(d=>[d[0],d[1],d[2],d[5],d[6]]);
+const ITEM={};DEFS.forEach(([n,r,f,k,v,p,pt])=>ITEM[n]={n,r,f,k,v:v||{},p,pt});
 const RNAME={C:"COMMON",R:"RARE",E:"EPIC",L:"LEGENDARY",X:"CURSED"};
 const RC={C:'#c4c2bc',R:'#62e2ff',E:'#c86bff',L:'#ffd21f',X:'#ff4238'};
 const RVAR={C:'var(--panel)',R:'var(--cyan)',E:'var(--epic)',L:'var(--hi)',X:'var(--bad)'};
@@ -519,12 +589,18 @@ const BOX_COST=150;
 /* ---------- PERSISTENT ---------- */
 const P={best:store.get('ms26-best',0),col:store.get('ms26-col',{}),bucks:store.get('ms26-bucks',null),menus:store.get('ms26-menus',0),runs:store.get('ms26-runs',0)};
 if(P.bucks===null){P.bucks=BOX_COST;store.set('ms26-bucks',P.bucks);P.welcome=true}
-function save(){store.set('ms26-best',P.best);store.set('ms26-col',P.col);store.set('ms26-bucks',P.bucks);store.set('ms26-menus',P.menus);store.set('ms26-runs',P.runs)}
+P.pity=store.get('ms26-pity',0);
+{let recalled=0;Object.keys(P.col).forEach(n=>{if(!ITEM[n]){recalled+=P.col[n];delete P.col[n]}});
+ if(recalled){P.bucks+=recalled*30;store.set('ms26-col',P.col);store.set('ms26-bucks',P.bucks);P.notice=`OLD COLLECTABLES RECALLED FOR NOT BEING MENUS. +${recalled*30} MB`}}
+{const today=new Date().toDateString();if(store.get('ms26-day','')!==today){store.set('ms26-day',today);if(!P.welcome){P.bucks+=50;store.set('ms26-bucks',P.bucks);P.daily=true}}}
+function save(){store.set('ms26-best',P.best);store.set('ms26-col',P.col);store.set('ms26-bucks',P.bucks);store.set('ms26-menus',P.menus);store.set('ms26-runs',P.runs);store.set('ms26-pity',P.pity)}
 const ownedCount=()=>ITEMS.filter(i=>P.col[i[0]]>0).length;
 const has=k=>ITEMS.some(i=>i[3]===k&&P.col[i[0]]>0);
-function rollItem(boost){
+function rollItem(boost,pity){
   const one=()=>{const x=Math.random();return x<.015?'X':x<.06?'L':x<.18?'E':x<.45?'R':'C'};
   let r=one();if(boost){const r2=one();if(RORD.indexOf(r2)>RORD.indexOf(r))r=r2}
+  if(pity){if(RORD.indexOf(r)<2&&P.pity>=9){const x=Math.random();r=x<.12?'X':x<.35?'L':'E'}
+    P.pity=RORD.indexOf(r)>=2?0:P.pity+1}
   return pick(ITEMS.filter(i=>i[1]===r))[0];
 }
 function grant(name){const isNew=!(P.col[name]>0);P.col[name]=(P.col[name]||0)+1;save();return isNew}
@@ -532,13 +608,62 @@ function grant(name){const isNew=!(P.col[name]>0);P.col[name]=(P.col[name]||0)+1
 /* ---------- PIXEL ART ---------- */
 function hash(s){let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
 function rng(seed){return()=>{seed=(seed+0x6D2B79F5)>>>0;let t=seed;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
+const DRAW={
+  checkbox(r,b,c,v){b(3,3,10,10,c.W);if(v.on)[[4,8],[5,9],[6,10],[7,9],[8,8],[9,7],[10,6],[11,5]].forEach(([x,y])=>r(x,y-1,1,2,c.A))},
+  radio(r,b,c){r(5,2,6,12,c.K);r(3,4,10,8,c.K);r(4,3,8,10,c.K);r(5,3,6,10,c.W);r(4,4,8,8,c.W);r(6,6,4,4,c.A)},
+  button(r,b,c,v){r(1,4,14,8,c.K);r(2,5,12,6,v.f||c.A);r(2,5,12,1,'rgba(255,255,255,.55)');r(2,10,12,1,'rgba(0,0,0,.3)');
+    if(v.t==='back'){r(4,7,1,2,c.K);r(5,6,1,4,c.K);r(6,5,1,6,c.K);r(7,7,5,2,c.K)}
+    else if(v.t==='ok'){r(4,6,3,4,c.K);r(5,7,1,2,v.f);r(8,6,1,4,c.K);r(9,7,1,2,c.K);r(10,6,1,1,c.K);r(10,9,1,1,c.K)}
+    else if(v.t==='x'){[[5,6],[6,7],[7,8],[8,9],[9,6],[8,7],[6,8],[5,9]].forEach(([x,y])=>r(x+1,y,1,1,c.K))}
+    else if(v.t==='all'){r(4,7,8,2,c.K);r(10,6,1,4,c.K);r(11,7,1,2,c.K)} else r(5,7,6,2,'rgba(0,0,0,.35)')},
+  hamburger(r,b,c){r(2,3,12,2,c.A);r(2,7,12,2,c.A);r(2,11,12,2,c.A)},
+  kebab(r,b,c){[3,7,11].forEach(y=>r(7,y,2,2,c.A))},
+  meatballs(r,b,c){[3,7,11].forEach(x=>r(x,7,2,2,c.A))},
+  ellipsis(r,b,c){b(1,5,14,6,c.W);[4,7,10].forEach(x=>r(x,7,2,2,c.K))},
+  gear(r,b,c){r(7,1,2,14,c.A);r(1,7,14,2,c.A);r(3,3,10,10,c.A);r(2,4,12,8,c.A);r(4,2,8,12,c.A);r(6,6,4,4,c.B)},
+  closex(r,b,c){b(2,2,12,12,c.G);for(let i=0;i<7;i++){r(4+i,4+i,2,1,c.R);r(10-i,4+i,2,1,c.R)}},
+  textfield(r,b,c){b(1,4,14,8,c.W);r(3,6,1,4,c.K);r(5,8,5,1,c.D)},
+  scrollbar(r,b,c,v){b(5,0,6,16,c.G);r(6,v.long?2:4,4,v.long?2:5,c.A);r(7,1,2,1,c.K);r(7,14,2,1,c.K)},
+  breadcrumb(r,b,c){[0,5,10].forEach(x=>[[0,4],[1,5],[2,6],[3,7],[2,8],[1,9],[0,10]].forEach(([dx,y])=>r(x+dx,y,2,1,c.A)))},
+  badge(r,b,c){r(4,2,8,12,c.R);r(2,4,12,8,c.R);r(3,3,10,10,c.R);r(8,5,1,6,c.W);r(7,6,1,1,c.W);r(7,10,3,1,c.W)},
+  tooltip(r,b,c){b(1,2,14,9,c.W);r(4,11,3,1,c.K);r(5,12,2,1,c.K);r(5,11,1,1,c.W);r(3,5,9,1,c.D);r(3,7,6,1,c.D)},
+  progress(r,b,c,v){const h=v.w?4:5;b(1,6,14,h,c.W);r(2,7,Math.round(12*(v.p||.5)),h-2,c.A)},
+  wifi(r,b,c,v){const n=v.n||3;r(7,12,2,2,c.A);r(5,9,6,1,n>1?c.A:c.D);r(4,10,1,1,n>1?c.A:c.D);r(11,10,1,1,n>1?c.A:c.D);
+    r(3,6,10,1,n>2?c.A:c.D);r(2,7,1,1,n>2?c.A:c.D);r(13,7,1,1,n>2?c.A:c.D);r(1,3,14,1,c.D);r(0,4,1,1,c.D);r(15,4,1,1,c.D)},
+  hourglass(r,b,c){r(3,1,10,2,c.K);r(3,13,10,2,c.K);r(4,3,8,1,c.Y);r(5,4,6,1,c.Y);r(6,5,4,1,c.Y);r(7,6,2,2,c.Y);r(7,8,2,1,c.K);r(7,9,2,1,c.Y);r(6,10,4,1,c.Y);r(5,11,6,2,c.Y);
+    [[3,3],[12,3],[4,5],[11,5],[5,6],[10,6],[6,7],[9,7],[5,9],[10,9],[4,10],[11,10],[3,11],[12,11]].forEach(([x,y])=>r(x,y,1,y<8?2:2,c.K))},
+  toggle(r,b,c,v){r(1,4,14,8,c.K);r(2,5,12,6,v.dark?c.K:(v.on?c.A:c.D));if(v.dark)r(3,6,2,2,c.Y);r(v.on?9:2,5,5,6,c.K);r(v.on?10:3,6,3,4,v.dark?c.D:c.W)},
+  slider(r,b,c){r(1,7,14,2,c.D);r(1,7,8,2,c.A);b(7,4,4,8,c.G)},
+  dropdown(r,b,c,v){b(1,1,14,5,c.W);r(10,3,3,1,c.A);r(11,4,1,1,c.A);b(1,5,11,v.long?11:7,c.W);r(3,7,6,1,c.D);r(3,9,5,1,c.D);if(v.long){r(3,11,7,1,c.D);r(3,13,4,1,c.D)}},
+  search(r,b,c){r(3,3,6,6,c.W);r(3,2,6,1,c.A);r(2,3,1,6,c.A);r(9,3,1,6,c.A);r(3,9,6,1,c.A);r(9,9,2,2,c.K);r(11,11,2,2,c.K);r(13,13,2,2,c.K)},
+  tabs(r,b,c){b(1,7,14,8,c.W);b(1,3,6,5,c.A);b(7,4,6,4,c.G);r(2,7,4,1,c.A)},
+  spinner(r,b,c){[[7,1],[11,3],[13,7],[11,11],[7,13],[3,11],[1,7],[3,3]].forEach(([x,y],i)=>r(x,y,2,2,i<3?c.A:c.D))},
+  accordion(r,b,c){b(1,1,14,4,c.G);b(1,5,14,4,c.A);b(1,9,14,6,c.W);r(11,3,2,1,c.K);r(11,7,2,1,c.K);r(3,11,7,1,c.D)},
+  pagination(r,b,c){b(0,5,5,6,c.W);b(5,5,5,6,c.A);b(10,5,5,6,c.W);r(2,7,1,2,c.K);r(7,7,1,2,c.K);r(12,7,1,2,c.K)},
+  toast(r,b,c){b(1,4,14,8,c.Y);r(3,6,9,1,c.K);r(3,8,6,1,c.K)},
+  floppy(r,b,c){r(2,2,12,12,c.B);r(4,2,7,4,c.G);r(8,3,2,2,c.K);r(4,8,8,6,c.W);r(5,10,6,1,c.D)},
+  trash(r,b,c){r(3,3,10,2,c.D);r(6,2,4,1,c.D);r(4,5,8,9,c.G);r(6,6,1,7,c.D);r(9,6,1,7,c.D)},
+  stars(r,b,c){r(7,1,2,4,c.A);r(1,5,14,2,c.A);r(3,7,10,2,c.A);r(4,9,8,2,c.A);r(3,11,3,2,c.A);r(10,11,3,2,c.A)},
+  volume(r,b,c){r(1,6,3,4,c.W);r(4,4,2,8,c.W);r(8,7,1,2,c.A);r(10,5,1,6,c.A);r(12,3,1,10,c.A);r(14,1,1,14,c.A)},
+  meter(r,b,c){[[1,11],[5,8],[9,5],[13,2]].forEach(([x,y])=>r(x,y,2,14-y,c.A))},
+  cookiebanner(r,b,c){b(0,7,16,9,c.W);r(2,9,4,4,'#b8763a');r(3,10,1,1,c.K);r(4,12,1,1,c.K);r(8,9,6,2,c.A);r(8,12,4,1,c.D)},
+  coin(r,b,c){r(4,1,8,14,c.Y);r(1,4,14,8,c.Y);r(2,2,12,12,c.Y);r(5,5,1,6,c.K);r(10,5,1,6,c.K);r(6,6,1,1,c.K);r(9,6,1,1,c.K);r(7,7,2,1,c.K)},
+  contextmenu(r,b,c){b(3,1,12,14,c.W);r(5,3,7,1,c.D);r(5,5,7,1,c.D);r(4,7,10,3,c.A);r(5,11,7,1,c.D);r(0,0,1,4,c.K);r(1,1,1,2,c.K)},
+  calendar(r,b,c){b(1,2,14,13,c.W);r(2,3,12,3,c.R);for(let i=0;i<4;i++)for(let j=0;j<2;j++)r(3+i*3,8+j*3,2,2,(i===2&&j===0)?c.A:c.D)},
+  colorpicker(r,b,c){['#ff4238','#ffd21f','#3ddc6e','#62e2ff','#1328a0','#c86bff','#f5f2e6','#6a6862','#0d0d16'].forEach((col,i)=>r(2+(i%3)*4,2+Math.floor(i/3)*4,4,4,col))},
+  captcha(r,b,c){b(1,1,14,14,c.W);for(let i=0;i<9;i++)r(2+(i%3)*4,2+Math.floor(i/3)*4,3,3,[0,4,5,7].includes(i)?c.A:c.G)},
+  window(r,b,c,v){r(1,2,14,12,c.K);r(2,3,12,2,c.B);r(2,5,12,8,c.W);if(!v.nox)r(12,3,2,2,c.R);r(4,7,7,1,c.D);r(4,9,5,1,c.D)},
+  cursor(r,b,c){["K......","KK.....","KWK....","KWWK...","KWWWK..","KWAWAK.","KWWWWWK","KWWKKKK","KWK....","KK.....","K......"].forEach((row,y)=>[...row].forEach((ch,x)=>{if(ch!=='.')r(x+4,y+2,1,1,ch==='K'?c.K:ch==='A'?c.A:c.W)}))},
+  bsod(r,b,c){r(0,2,16,12,c.B);r(3,5,1,1,c.W);r(3,7,1,1,c.W);r(6,4,1,1,c.W);r(7,5,1,4,c.W);r(6,9,1,1,c.W);r(3,11,10,1,c.W)},
+  error(r,b,c){b(1,2,14,12,c.G);r(2,3,12,2,c.R);r(5,6,6,6,c.R);r(7,7,2,2,c.W);r(7,10,2,1,c.W)}
+};
 function drawItem(cv,name,locked){
-  cv.width=cv.height=12;const c=cv.getContext('2d');c.clearRect(0,0,12,12);
-  const R=rng(hash(name)),it=ITEM[name],col=locked?'#3b3b48':RC[it.r],col2=locked?'#2a2a34':'#f5f2e6',ink='#0d0d16';
-  const g=[];for(let y=0;y<12;y++){g.push([]);for(let x=0;x<6;x++){const inside=y>0&&y<11&&x>0;const v=R();g[y].push(inside&&v<.5?(v<.13?2:1):0)}}
-  for(let y=0;y<12;y++)for(let x=0;x<6;x++){const v=g[y][x];if(!v)continue;c.fillStyle=v===2?col2:col;c.fillRect(x,y,1,1);c.fillRect(11-x,y,1,1)}
-  if(!locked&&it.r!=='C'){c.fillStyle=ink;c.fillRect(4,5,1,1);c.fillRect(7,5,1,1)}
-  if(locked){c.fillStyle='#6a6862';[[5,3],[6,3],[7,4],[6,5],[6,6],[6,8]].forEach(([x,y])=>c.fillRect(x,y,1,1))}
+  cv.width=cv.height=16;const c=cv.getContext('2d');c.clearRect(0,0,16,16);const it=ITEM[name];
+  const pal={A:it.v.a||(it.r==='C'?'#3ddc6e':RC[it.r]),K:'#0d0d16',W:'#f5f2e6',G:'#c4c2bc',D:'#6a6862',B:'#1328a0',R:'#ff4238',Y:'#ffd21f'};
+  const r=(x,y,w,h,col)=>{c.fillStyle=col;c.fillRect(x,y,w,h)};
+  const b=(x,y,w,h,fill)=>{r(x,y,w,h,pal.K);r(x+1,y+1,w-2,h-2,fill)};
+  (DRAW[it.k]||DRAW.ellipsis)(r,b,pal,it.v);
+  if(locked){try{const d=c.getImageData(0,0,16,16);for(let i=0;i<d.data.length;i+=4)if(d.data[i+3]){d.data[i]=58;d.data[i+1]=58;d.data[i+2]=74;d.data[i+3]=255}c.putImageData(d,0,0)}catch(e){}}
 }
 const SPR=["K...........","KK..........","KWK.........","KWWK........","KWWWK.......","KWWWWK......","KWEWEWK.....","KWWWWWWK....","KWMMMWWWK...","KWWWWWWWWK..","KWWWWWKKKKK.","KWWKWWK.....","KWK.KWWK....","KK..KWWK....","K....KWWK...",".....KKK...."];
 let mood='ok';
@@ -558,7 +683,7 @@ function fillCard(el,name,count){
   const cv=document.createElement('canvas');drawItem(cv,name,locked);
   const info=document.createElement('div');info.className='info';
   const add=(cls,t)=>{const d=document.createElement('div');d.className=cls;d.textContent=t;info.appendChild(d)};
-  add('rar',locked?'??? · LOCKED':RNAME[it.r]);add('nm',locked?'???':it.n);add('fl',locked?'Find it at the bottom of a menu. Or in a Menu Box.':it.f);
+  add('rar',locked?'??? · LOCKED':RNAME[it.r]);add('nm',locked?'???':it.n);add('fl',locked?'A mysterious UI item. Find it at the bottom of a menu, or in a Menu Box.':it.f);
   if(!locked&&it.p)add('pk','PERK: '+it.pt);
   if(!locked)add('ct','OWNED ×'+count);
   el.append(cv,info);
@@ -819,33 +944,69 @@ function renderColl(){
     const sp=document.createElement('span');sp.textContent=own?n:'???';t.append(cv,sp);
     t.onclick=()=>{sel=n;sfx.nav();renderColl()};g.appendChild(t)});
 }
-let boxBusy=false;
-function showBox(){showOnly('#box');$('#mbox').hidden=false;$('#mbox').textContent='?';$('#mbox').style.background='';$('#breveal').hidden=true;$('#btitle').textContent='MENU BOX';
-  $('#bsub').textContent=`CONTAINS ONE (1) MENU ITEM. PROBABLY. · YOU HAVE ${fmt(P.bucks)} MB`;
-  const b=$('#bagain');b.textContent=`OPEN · ${BOX_COST} MB`;b.disabled=P.bucks<BOX_COST}
-function openBox(){
-  if(boxBusy||P.bucks<BOX_COST)return;boxBusy=true;audio();P.bucks-=BOX_COST;save();
-  const mb=$('#mbox'),rv=$('#breveal');rv.hidden=true;mb.hidden=false;mb.textContent='?';mb.style.background='';mb.classList.add('shake');
-  $('#bagain').disabled=true;$('#bback').disabled=true;$('#btitle').textContent='OPENING…';sfx.roll();
-  $('#bsub').textContent=pick(['CONSULTING THE MENU GODS…','SHAKING THE DROPDOWN…','BRIBING THE ALGORITHM…','ASKING THE FRIDGE…']);
-  setTimeout(()=>{
-    mb.classList.remove('shake');const it=rollItem(false),r=ITEM[it].r,nw=grant(it);
-    if(!nw){P.bucks+=25;save()}
-    mb.style.background=RVAR[r];mb.textContent='!';mb.classList.remove('open');void mb.offsetWidth;mb.classList.add('open');burst(mb,26);
-    $('#btitle').textContent=nw?'NEW ITEM!':'DUPLICATE';
-    $('#bsub').textContent=(nw?RNAME[r]+' · ':'REFUNDED 25 MB · ')+`YOU HAVE ${fmt(P.bucks)} MB`;
-    fillCard(rv,it,P.col[it]);rv.hidden=false;sfx.rarity(r);sel=it;
-    const b=$('#bagain');b.textContent=`OPEN ANOTHER · ${BOX_COST} MB`;b.disabled=P.bucks<BOX_COST;$('#bback').disabled=false;boxBusy=false;
-  },1300);
+let boxBusy=false,boxSkip=false;
+const HYPE=["SUMMONING A UI ITEM…","SHAKING THE DROPDOWN…","CONSULTING THE MENU GODS…","THIS ONE FEELS DIFFERENT…","IS THAT… GOLD?!","LEGENDARY ENERGY DETECTED*","*ENERGY MAY NOT BE LEGENDARY","THE ODDS ARE IN YOUR FAVOUR","HERE IT COMES…"];
+const LETDOWN={C:["…it's a {n}.","Wow. A {n}. Truly.","The hype was the real loot.","All that for a {n}."],R:["A {n}! Moderately exciting.","Rare! Statistically slightly less disappointing."],E:["EPIC! A {n}! Frame it."],L:["ACTUALLY LEGENDARY. WE ARE AS SURPRISED AS YOU."],X:["Oh no. It's cursed. You love it anyway."]};
+function boxButtons(){const a=$('#bopen'),t=$('#bopen10');a.textContent=`OPEN ×1 · ${BOX_COST} MB`;t.textContent=`OPEN ×10 · ${fmt(BOX_COST*9)} MB`;
+  a.disabled=boxBusy||P.bucks<BOX_COST;t.disabled=boxBusy||P.bucks<BOX_COST*9;$('#bback').disabled=boxBusy;$('#brates').disabled=boxBusy;
+  $('#bpity').textContent=`PITY: ${P.pity}/10 · EPIC OR BETTER GUARANTEED BY BOX 10`;
+  $('#bsub').textContent=`YOU HAVE ${fmt(P.bucks)} MENU BUCKS · DUPLICATES REFUND 25 MB`}
+function resetStage(){const cube=$('#cube');cube.classList.remove('burst');cube.style.transform='translateY(0) rotateX(-18deg) rotateY(30deg)';cube.style.setProperty('--rc','var(--hi)');
+  $('#rays').style.opacity=0;$('#rays').style.setProperty('--rc','var(--hi)');const pz=$('#prize');pz.classList.remove('show');pz.innerHTML='';
+  $('#breveal').hidden=true;$('#bgrid').hidden=true}
+function showBox(){showOnly('#box');resetStage();$('#btitle').textContent='MENU BOX';$('#hype').textContent='TAP OPEN. FEEL HOPE. RECEIVE CHECKBOX.';boxButtons()}
+function openBox(n){
+  const cost=n===10?BOX_COST*9:BOX_COST;if(boxBusy||P.bucks<cost)return;
+  boxBusy=true;boxSkip=false;audio();P.bucks-=cost;save();resetStage();boxButtons();
+  const items=[];for(let i=0;i<n;i++)items.push(rollItem(false,true));save();
+  const best=items.reduce((a,b)=>RORD.indexOf(ITEM[b].r)>RORD.indexOf(ITEM[a].r)?b:a);
+  $('#btitle').textContent=n===10?'×10 SUMMON':'OPENING…';$('#bskip').hidden=false;
+  const cube=$('#cube'),rays=$('#rays'),hype=$('#hype');
+  const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const tease=['var(--panel)','var(--cyan)','var(--epic)','var(--hi)'];
+  let ang=0,last=performance.now(),t0=last,lastBeat=0,hi=0,phase=0;
+  const step=now=>{
+    const dt=Math.min(.05,(now-last)/1000);last=now;const t=(now-t0)/1000;
+    if(boxSkip||reduce){return burst()}
+    let y=0,speed;
+    if(t<1){const k=1-Math.pow(1-t,3);y=-140*(1-k);speed=90}
+    else{const u=Math.min(1,(t-1)/2.2);speed=90+u*u*450;y=-26*u;rays.style.opacity=(.15+u*.55).toFixed(2);
+      const ti=Math.min(3,Math.floor(u*4));if(ti!==phase){phase=ti;cube.style.setProperty('--rc',tease[ti]);rays.style.setProperty('--rc',tease[ti])}}
+    ang+=speed*dt;cube.style.transform=`translateY(${y.toFixed(1)}px) rotateX(${(-18+Math.sin(t*2)*10).toFixed(1)}deg) rotateY(${ang.toFixed(1)}deg)`;
+    const beat=t<1?.4:Math.max(.09,.4-(t-1)*.14);if(t-lastBeat>beat){lastBeat=t;tone(160+hi*14,.07,'square',.045);hi++}
+    if(t>.5&&Math.floor(t/.5)!==Math.floor((t-dt)/.5))hype.textContent=HYPE[Math.min(HYPE.length-1,Math.floor((t-.5)/.42))];
+    if(t>=3.3)return burst();
+    requestAnimationFrame(step)};
+  const burst=()=>{
+    cube.classList.add('burst');noise(.35,.06);tone(1400,.35,'triangle',.06,0,180);$('#bskip').hidden=true;
+    setTimeout(()=>{
+      const r=ITEM[best].r;cube.style.setProperty('--rc',RVAR[r]);rays.style.setProperty('--rc',RVAR[r]);rays.style.opacity=RORD.indexOf(r)>=2?'.7':'.2';
+      const res=items.map(it=>{const nw=grant(it);if(!nw){P.bucks+=25}return{it,nw}});save();
+      const pz=$('#prize');const cv=document.createElement('canvas');drawItem(cv,best,false);pz.appendChild(cv);requestAnimationFrame(()=>pz.classList.add('show'));
+      const top=res.find(x=>x.it===best);
+      if(RORD.indexOf(r)<2){[392,370,349,311].forEach((f,i)=>tone(f,i<3?.28:.7,'triangle',.08,i*.3,i===3?280:undefined))}else sfx.rarity(r);
+      hype.textContent=pick(LETDOWN[r]).replace('{n}',best).replace(/\ba ([AEIOU])/g,'an $1');
+      $('#btitle').textContent=top.nw?'NEW ITEM!':'DUPLICATE';
+      const rv=$('#breveal');fillCard(rv,best,P.col[best]);rv.querySelector('.rar').textContent=(top.nw?'NEW! ':'DUPLICATE (+25 MB) · ')+RNAME[r];rv.hidden=false;sel=best;
+      if(n===10){const g=$('#bgrid');g.innerHTML='';res.slice().sort((a,b)=>RORD.indexOf(ITEM[b.it].r)-RORD.indexOf(ITEM[a.it].r)).forEach(({it,nw})=>{
+          const t=document.createElement('div');t.className='tile';t.style.setProperty('--rc',RVAR[ITEM[it].r]);const c=document.createElement('canvas');drawItem(c,it,false);
+          const sp=document.createElement('span');sp.textContent=it;t.append(c,sp);if(nw){const nb=document.createElement('em');nb.className='new';nb.textContent='NEW';t.appendChild(nb)}g.appendChild(t)});
+        g.hidden=false;const cm=res.filter(x=>ITEM[x.it].r==='C').length;hype.textContent=`10 SUMMONS. ${cm} COMMON${cm===1?'':'S'}. ${res.filter(x=>x.nw).length} NEW. ${pick(['WORTH IT?','NO REFUNDS.','THE MENU GODS THANK YOU.'])}`}
+      boxBusy=false;boxButtons();
+    },reduce?0:650)};
+  requestAnimationFrame(step);
 }
+function showRates(){openModal({title:'DROP RATES (LEGALLY REQUIRED)',body:`<table class="rates"><tr><td>Common</td><td>55%</td></tr><tr><td>Rare</td><td>27%</td></tr><tr><td>Epic</td><td>12%</td></tr><tr><td>Legendary</td><td>4.5%</td></tr><tr><td>Cursed</td><td>1.5%</td></tr><tr><td>Something useful</td><td>0%</td></tr><tr><td>What you wanted</td><td>0%</td></tr><tr><td>A real hamburger</td><td>0%</td></tr></table><small>Pity: Epic or better guaranteed by your 10th box. Menu Bucks have no cash value, which is the point.</small>`,
+  build(a){a.appendChild(mk('UNDERSTOOD (I WILL KEEP PULLING)','big prime',()=>{closeModal();sfx.nav()}))}})}
 
 /* ---------- TITLE MENU ---------- */
 function titleMain(){const m=$('#tmenu');m.innerHTML='';
   m.append(mk('▸ START GAME','big prime',startGame),
     mk(`COLLECTABLES ${ownedCount()}/${ITEMS.length}`,'big',()=>{sfx.nav();showColl('#title')}),
+    mk(`MENU BOX · ${fmt(P.bucks)} MB`,'big',()=>{sfx.nav();P.welcome=false;showBox()}),
     mk('OPTIONS','big',()=>{sfx.nav();titleOpts()}),
     mk('EXIT','big',()=>{sfx.wrong();shake();toast('THERE IS NO EXIT. ONLY MENUS.')}));
-  $('#tbest').innerHTML=`BEST <b>${fmt(P.best)}</b> · MENU BUCKS <b>${fmt(P.bucks)}</b><br>LIFETIME MENUS OPENED <b>${fmt(P.menus)}</b>${S.insane?' · <b>INSANE MODE</b>':''}`+(P.welcome?'<br>WELCOME GIFT: 150 MB FOR A FREE MENU BOX':'');
+  $('#tbest').innerHTML=`BEST <b>${fmt(P.best)}</b> · MENU BUCKS <b>${fmt(P.bucks)}</b><br>LIFETIME MENUS OPENED <b>${fmt(P.menus)}</b>${S.insane?' · <b>INSANE MODE</b>':''}`+(P.welcome?'<br>WELCOME GIFT: 150 MB FOR A FREE MENU BOX':'')+(P.daily?'<br>DAILY LOGIN BONUS: +50 MB':'')+(P.notice?'<br>'+P.notice:'');
   setTimeout(()=>m.querySelector('button').focus({preventScroll:true}),30)}
 function titleOpts(){const m=$('#tmenu');m.innerHTML='';
   const s=mk('SOUND: '+(muted?'OFF':'ON'),'big',()=>{setMute(!muted);s.textContent='SOUND: '+(muted?'OFF':'ON');sfx.nav()});
@@ -864,7 +1025,7 @@ $('#tomenu').onclick=()=>{sfx.nav();showTitle()};
 $('#ocoll').onclick=()=>{sfx.nav();showColl('#over')};
 $('#cback').onclick=()=>{sfx.nav();if(collFrom==='#over')showOnly('#over');else showTitle()};
 $('#cbox').onclick=()=>{sfx.nav();P.welcome=false;showBox()};
-$('#bagain').onclick=openBox;
+$('#bopen').onclick=()=>openBox(1);$('#bopen10').onclick=()=>openBox(10);$('#bskip').onclick=()=>{boxSkip=true};$('#brates').onclick=()=>{sfx.nav();showRates()};
 $('#bback').onclick=()=>{if(boxBusy)return;sfx.nav();showColl()};
 $('#copy').onclick=()=>{const t=`I scored ${fmt(S.score)} in MENU SIMULATOR 2K26 (${S.level} tasks, ${S.runMenus} menus, ${ownedCount()}/${ITEMS.length} collectables). The menus won.`;
   try{navigator.clipboard.writeText(t).then(()=>toast('COPIED. SHARE YOUR SHAME.'),()=>toast('COPY BLOCKED. SCREENSHOT IT, LIKE OUR ANCESTORS.'))}catch(e){toast('COPY BLOCKED. SCREENSHOT IT, LIKE OUR ANCESTORS.')}};

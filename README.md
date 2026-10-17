@@ -1,6 +1,6 @@
 # Menu Simulator 2K26
 
-A frantic pixel-art parody game about navigating menus. Tap through nested menus before the timer drains, dodge decoys like "Setings (Legacy)", survive cookie banners, runaway Skip buttons, dialog inception and menus that rearrange themselves. Collect 54 menu items with perks, open Menu Boxes, and absorb pearls of wisdom.
+A frantic pixel-art parody game about navigating menus. Tap through nested menus before the timer drains, dodge decoys like "Setings (Legacy)", survive cookie banners, runaway Skip buttons, dialog inception and menus that rearrange themselves. Collect 58 UI-item collectables (checkboxes, dropdowns, the Unclosable Popup…) from a 3D gacha Menu Box with pity, ×10 pulls and legally required drop rates, and absorb pearls of wisdom.
 
 **Play:** https://swwilshub.github.io/MenuSim2k26/
 
