@@ -9,7 +9,7 @@
 <title>Menu Simulator 2K26</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&family=VT323&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&family=Silkscreen:wght@400;700&family=VT323&display=swap">
 <style>
 /* Layout: one-screen BIOS-setup parody — HUD, objective ticket, a bevelled menu window, mascot footer; overlays for chaos dialogs, collection and Menu Box */
 :root{
@@ -184,7 +184,33 @@ button{font:inherit;touch-action:manipulation}
 .px{position:fixed;z-index:89;width:8px;height:8px;pointer-events:none;animation:burst .5s steps(5) forwards}
 @keyframes burst{to{transform:translate(var(--dx),var(--dy));opacity:0}}
 
+/* in-game effects from menu actions */
+body.fx-comic,body.fx-comic *{font-family:"Comic Sans MS","Comic Neue","Chalkboard SE",cursive!important;letter-spacing:0!important}
+body.fx-dark #app{--panel:#26252e;--panel-hi:#43414f;--panel-lo:#0b0a10;--ink:#ebe7d9}
+body.fx-dark .btn:hover{color:#0d0d16}
+body.fx-hue .win,body.fx-hue .goal{animation:huey 2s linear infinite}
+@keyframes huey{to{filter:hue-rotate(360deg)}}
+body.fx-haunt .win{animation:haunt 1.3s steps(1) infinite}
+@keyframes haunt{0%,70%{opacity:1}72%{opacity:.2}76%{opacity:.9}80%{opacity:.35}84%{opacity:1}}
+body.fx-float .item{animation:floaty 1.3s ease-in-out infinite alternate}
+body.fx-float .item:nth-child(odd){animation-delay:-.65s}
+@keyframes floaty{to{transform:translateY(-9px) rotate(-2deg)}}
+body.fx-jet #app{animation:jet .08s steps(2) infinite}
+@keyframes jet{50%{transform:translate(2px,-2px)}}
+body.fx-small .list .btn{font-size:15px;padding:3px 8px}
+body.fx-small .crumbs{font-size:14px}
+body.fx-spin #app{animation:spin .9s steps(12)}
+@keyframes spin{to{transform:rotate(360deg)}}
+body.fx-off #app{animation:crt .8s steps(4)}
+@keyframes crt{0%{transform:scaleY(1)}30%{transform:scaleY(.02)}60%{transform:scaleY(.02);opacity:0}100%{transform:scaleY(1);opacity:1}}
+.crumbs.voided .crumb:not(.now){color:transparent;background:var(--bg2)}
+.fxline{font-family:var(--f-display);font-size:9px;letter-spacing:.06em;color:var(--good);line-height:1.4}
+.fxline:empty{display:none}
+.fxmsg{font-family:var(--f-display);font-size:12px;line-height:1.5;color:var(--hi);max-width:34ch}
+.fxmsg:empty{display:none}
+
 @media (prefers-reduced-motion:reduce){
+  body.fx-hue .win,body.fx-hue .goal,body.fx-haunt .win,body.fx-float .item,body.fx-jet #app,body.fx-spin #app,body.fx-off #app{animation:none}
   body,body.frenzy,.pointy canvas,.logo em,.crumb.now,.mbox.shake{animation:none}
   #app.shake,.list.in .item,.dialog,.px{animation:none}
   .px{display:none}
@@ -204,6 +230,7 @@ button{font:inherit;touch-action:manipulation}
   <section class="goal" id="goal" aria-live="polite">
     <div class="ticket"><span id="ticket">TICKET #0000</span><span id="stepno">STEP 1/2</span></div>
     <div class="crumbs" id="crumbs"></div>
+    <div class="fxline" id="fxline"></div>
   </section>
   <section class="win">
     <div class="titlebar"><span id="wtitle">MAIN MENU</span><em class="depth" id="depth">D1</em><button class="tb-x" id="tbx" type="button" aria-label="Close window">X</button></div>
@@ -227,6 +254,7 @@ button{font:inherit;touch-action:manipulation}
 <div class="screen" id="inter" hidden>
   <p class="big-msg" id="ititle">TASK COMPLETE</p>
   <div class="sub" id="ibonus"></div>
+  <div class="fxmsg" id="ifx"></div>
   <div id="idrop" class="drop"></div>
   <p class="quote" id="iquote"></p>
   <div style="width:min(100%,300px)" class="prog"><i id="iprog"></i></div>
@@ -283,10 +311,10 @@ const fmt=n=>n.toLocaleString('en-GB');
 /* ---------- SOUND ---------- */
 let ac=null, muted=store.get('ms26-muted',false);
 function audio(){if(!ac){try{ac=new(window.AudioContext||window.webkitAudioContext)()}catch(e){}}if(ac&&ac.state==='suspended')ac.resume();return ac}
-function tone(f,dur,type='square',vol=.07,when=0,slide){if(muted)return;const a=audio();if(!a)return;const t=a.currentTime+when;const o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(slide,t+dur);g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g).connect(a.destination);o.start(t);o.stop(t+dur+.03)}
+function tone(f,dur,type='square',vol=.07,when=0,slide){if(muted)return;if(S.fx&&S.fx.vol11)vol=Math.min(vol*2.4,.25);const a=audio();if(!a)return;const t=a.currentTime+when;const o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(slide,t+dur);g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g).connect(a.destination);o.start(t);o.stop(t+dur+.03)}
 function noise(dur,vol=.05){if(muted)return;const a=audio();if(!a)return;const b=a.createBuffer(1,Math.floor(a.sampleRate*dur),a.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);const s=a.createBufferSource(),g=a.createGain();g.gain.value=vol;s.buffer=b;s.connect(g).connect(a.destination);s.start()}
 const sfx={
-  click:c=>{const k=Math.min(c,20);tone(520+k*40,.05,'square',.07);tone(780+k*60,.06,'square',.05,.035)},
+  click:c=>{if(S.fx&&S.fx.scream){tone(700+Math.random()*500,.18,'sawtooth',.06,0,2600);return}const k=Math.min(c,20);tone(520+k*40,.05,'square',.07);tone(780+k*60,.06,'square',.05,.035)},
   wrong:()=>{tone(240,.28,'sawtooth',.09,0,60);noise(.14,.06)},
   complete:()=>[523,659,784,1047,1319].forEach((f,i)=>tone(f,.11,'square',.06,i*.06)),
   mega:()=>[392,523,659,784,1047,1319,1568,2093].forEach((f,i)=>tone(f,.1,'square',.06,i*.055)),
@@ -300,6 +328,7 @@ const sfx={
   nav:()=>tone(880,.04,'square',.05),
   frenzy:()=>{for(let i=0;i<12;i++)tone(300+i*120,.06,i%2?'square':'sawtooth',.05,i*.04)},
   rarity:r=>({C:()=>sfx.coin(),R:()=>sfx.combo(6),E:()=>sfx.complete(),L:()=>{sfx.mega();tone(2093,.5,'triangle',.07,.5)},X:()=>{tone(110,.6,'sawtooth',.09,0,55);[466,440,415,392].forEach((f,i)=>tone(f,.2,'square',.05,.1+i*.15))}})[r](),
+  fax:()=>{[2100,1300,2100,1650,980,2400,1100].forEach((f,i)=>tone(f,.12,i%2?'sawtooth':'square',.05,i*.11));noise(.5,.04)},
   roll:()=>{for(let i=0;i<14;i++)tone(400+i*60,.03,'square',.04,i*.085)}
 };
 
@@ -374,6 +403,83 @@ const WISDOM=[
 const GOOD=["CLICK.","Menu'd.","Crisp navigation.","Your thumb is a legend.","Very settings. Much option.","The submenu fears you.","Correct. Suspiciously correct.","Clean.","That's the one.","Pointy approves.","DEEPER.","You are the menu now."];
 const BAD=["That was a decoy, champ.","Close. Spelling matters.","Bold. Wrong.","That button has a family.","Error 404: skill not found.","The menu will remember this.","Read it again. But faster.","Nope. Legacy trap.","The decoys are winning."];
 const RANKS=[[0,"MENU TOURIST"],[600,"SUBMENU SQUIRE"],[1600,"DROPDOWN DISCIPLE"],[3200,"TOGGLE KNIGHT"],[6000,"SETTINGS SAGE"],[10000,"ARCHMAGE OF PREFERENCES"],[16000,"THE MENU ITSELF"],[30000,"MENU DEITY"],[50000,"BEYOND MENUS"]];
+/* every final action does something to the game. d = tasks it lasts (99 = rest of run) */
+const FXLABEL={vol11:'VOL 11',dark:'DARK MODE',grey:'NO FUN',quiet:'MUTED',invert:'TOGGLED',chaos2:'2× CHAOS',terms:'TERMS DUE',silent:'NO POINTY',turbo:'TURBO',nochaos:'NO CHAOS',bright:'MAX BRIGHT',hue:'VIBES',comic:'COMIC SANS',settings:'ALL SETTINGS',update:'UPDATE DUE',toaster:'TOASTER',jet:'JET FAN',sun:'SUN',scream:'SCREAMING',haunt:'HAUNTED',float:'NO GRAVITY',sort:'SORTED',small:'DESKTOP SITE',void:'HIDDEN',noback:'NO BACK',pigeon:'PIGEON',fed:'FED MENU',skip:'SKIP INTRO'};
+const addTime=s=>{S.time=Math.min(S.maxTime,S.time+s)};
+const FX={
+"Set Volume to 11":{k:'vol11',d:99,m:'VOLUME IS NOW 11. FOR THE REST OF THE RUN.'},
+"Enable Dark Mode":{k:'dark',d:3,m:'DARK MODE ON FOR 3 TASKS. MYSTERIOUS.'},
+"Disable Fun":{k:'grey',d:1,m:'FUN DISABLED. ENJOY THE GREY.'},
+"Reset to Defaults":{clear:1,m:'ALL EFFECTS RESET TO DEFAULTS.'},
+"Mute Notifications":{k:'quiet',d:2,m:'NOTIFICATIONS MUTED FOR 2 TASKS. SHH.'},
+"Apply":{m:'APPLIED. NOTHING HAPPENED. TRY APPLY (FOR REAL).'},
+"Apply (For Real)":{m:'APPLIED FOR REAL. +3s.',run:()=>addTime(3)},
+"Confirm Confirmation":{m:'CONFIRMATION CONFIRMED. +250 POINTS.',run:()=>{S.score+=250}},
+"Toggle Toggle":{k:'invert',d:1,m:'TOGGLE TOGGLED. SO WERE THE COLOURS.'},
+"Save":{m:'GAME SAVED. (IT WASN\'T.) +1s.',run:()=>addTime(1)},
+"Allow Everything":{k:'chaos2',d:1,m:'EVERYTHING ALLOWED. DOUBLE CHAOS NEXT TASK.'},
+"Accept Terms":{k:'terms',d:1,m:'TERMS ACCEPTED. MORE TERMS INCOMING.'},
+"Unsubscribe":{k:'silent',d:2,m:'UNSUBSCRIBED FROM POINTY. HE IS HURT.'},
+"Enable Turbo":{k:'turbo',d:1,m:'TURBO: 2× POINTS, 1.5× TIMER DRAIN.'},
+"Opt Out":{k:'nochaos',d:1,m:'OPTED OUT. NO CHAOS NEXT TASK.'},
+"Rename Fridge":{run:()=>{S.fridgeName=pick(['GERALD','COLD STEVE','THE CHILLMEISTER','FRIDGEY MCFRIDGEFACE','BARRY']);return 'THE SMART FRIDGE IS NOW CALLED '+S.fridgeName+'.'}},
+"Clear Cache":{m:'CACHE CLEARED. SO WAS YOUR COMBO.',run:()=>{S.combo=0}},
+"Mute Grandma":{m:'GRANDMA MUTED. SHE WILL STILL SEND TICKETS.',run:()=>{S.nanMuted=true}},
+"Max Brightness":{k:'bright',d:2,m:'BRIGHTNESS: MAXIMUM.'},
+"Reticulate Splines":{k:'hue',d:1,m:'SPLINES RETICULATED. COLOURS RETICULATED TOO.'},
+"Disable Ads (£4.99)":{m:'ADS DISABLED. THERE WERE NO ADS. -5 MENU BUCKS.',run:()=>{P.bucks=Math.max(0,P.bucks-5);save()}},
+"Enable Comic Sans":{k:'comic',d:99,m:'COMIC SANS ENABLED. FOR THE REST OF THE RUN. NO REGRETS.'},
+"Become Settings":{k:'settings',d:2,m:'YOU HAVE BECOME SETTINGS. EVERY WINDOW IS SETTINGS.'},
+"Undo Undo":{m:'UNDO UNDONE. NOTHING HAPPENED TWICE.'},
+"Calibrate Vibes":{k:'hue',d:2,m:'VIBES CALIBRATED. COLOURS ARE NOW VIBES.'},
+"Delete Monday":{m:'MONDAY DELETED. +2s.',run:()=>addTime(2)},
+"Enable Enable":{m:'ENABLE ENABLED. COMBO +5.',run:()=>{S.combo+=5;S.maxCombo=Math.max(S.maxCombo,S.combo)}},
+"Disable Disable":{m:'DISABLE DISABLED. FUN AND CHAOS RESTORED.',run:()=>{delete S.fx.grey;delete S.fx.nochaos}},
+"Factory Reset Feelings":{clear:1,m:'FEELINGS RESET. ALL EFFECTS GONE. POINTY FEELS NOTHING.'},
+"Turn It Off and On":{once:'off',m:'TURNING IT OFF AND ON AGAIN…'},
+"Update Now":{k:'update',d:1,m:'UPDATE SCHEDULED. IMMINENTLY.'},
+"Remind Me Never":{m:'REMINDER SET FOR NEVER. +1s.',run:()=>addTime(1)},
+"Snooze Forever":{m:'SNOOZED. TIMER FROZEN FOR 4s NEXT TASK.',run:()=>{S.snoozeNext=true}},
+"Sync to Toaster":{k:'toaster',d:2,m:'SYNCED TO TOASTER. IT NOW SENDS ALL TICKETS.'},
+"Pair With Kettle":{m:'PAIRED WITH KETTLE. IT IS BOILING WITH JOY.',run:()=>noise(1.4,.05)},
+"Allow Fridge to Vote":{run:()=>{const v=pick(Object.keys(FX).filter(n=>n!=='Allow Fridge to Vote'));return 'THE FRIDGE VOTED FOR "'+v.toUpperCase()+'". '+applyLeaf(v)}},
+"Set Fan to Jet Engine":{k:'jet',d:1,m:'FAN SET TO JET ENGINE. HOLD ON.',run:()=>noise(1,.07)},
+"Brightness: Sun":{k:'sun',d:1,m:'BRIGHTNESS: SUN. DO NOT STARE AT THE MENU.'},
+"Ringtone: Screaming":{k:'scream',d:99,m:'RINGTONE: SCREAMING. EVERY CLICK. FOREVER.'},
+"Export to Fax":{m:'EXPORTED TO FAX. SOMEWHERE A FAX MACHINE WEEPS.',run:()=>sfx.fax()},
+"Print to Void":{k:'haunt',d:1,m:'PRINTED TO THE VOID. THE VOID PRINTED BACK.'},
+"Save as FINAL_v2":{m:'SAVED AS FINAL_FINAL_v2_REAL. +1s.',run:()=>addTime(1)},
+"Enable Haunting":{k:'haunt',d:2,m:'HAUNTING ENABLED. THE MENU FLICKERS.'},
+"Download More RAM":{m:'RAM DOWNLOADED. MAX TIME +5s FOR THIS RUN.',run:()=>{S.maxTime+=5;addTime(5)}},
+"Rotate 360°":{once:'spin',m:'ROTATED 360°. EVERYTHING IS EXACTLY THE SAME.'},
+"Uninstall Gravity":{k:'float',d:2,m:'GRAVITY UNINSTALLED. MENUS FLOAT.'},
+"Opt In to Opting Out":{k:'nochaos',d:1,m:'OPTED IN TO OPTING OUT. NO CHAOS NEXT TASK.'},
+"Speak to Manager":{run:()=>{addTime(2);return 'THE MANAGER SAYS: "'+pick(WISDOM).toUpperCase()+'" +2s.'}},
+"Sort by Vibe":{k:'sort',d:2,m:'MENUS SORTED BY VIBE (SECRETLY ALPHABETICAL).'},
+"Request Desktop Site":{k:'small',d:2,m:'DESKTOP SITE REQUESTED. EVERYTHING IS TINY.'},
+"Clear All Hope":{k:'grey',d:2,m:'HOPE CLEARED. COLOUR CLEARED TOO.'},
+"Undo Everything":{clear:1,m:'EVERYTHING UNDONE.'},
+"Restore Purchases":{m:'PURCHASES RESTORED. +10 MENU BUCKS.',run:()=>{P.bucks+=10;save()}},
+"Skip Intro":{k:'skip',d:1,m:'INTROS SKIPPED. NEXT LOADING SCREEN CANCELLED.'},
+"Show Hidden Files":{m:'HIDDEN FILES SHOWN. FOUND 15 MENU BUCKS IN THERE.',run:()=>{P.bucks+=15;save()}},
+"Hide Shown Files":{k:'void',d:1,m:'SHOWN FILES HIDDEN. INCLUDING YOUR OBJECTIVE.'},
+"Empty the Bin":{k:'noback',d:99,m:'BIN EMPTIED. EVERY BACK BUTTON DELETED FOR THIS RUN.'},
+"Timezone: Vibes":{k:'hue',d:1,m:'TIMEZONE: VIBES. IT IS NOW PURPLE O\'CLOCK.'},
+"Approve Pigeon":{k:'pigeon',d:2,m:'PIGEON APPROVED. IT NOW SENDS YOUR TICKETS.'},
+"Feed the Menu":{k:'fed',d:2,m:'MENU FED. IT GREW AN EXTRA DECOY.'}
+};
+function applyLeaf(name){const e=FX[name];if(!e)return '';
+  if(e.clear){S.fx={};S.fridgeName=null;S.nanMuted=false}
+  if(e.k)S.fx[e.k]=Math.max(S.fx[e.k]||0,e.d);
+  if(e.once)S.onceFx=e.once;
+  const r=e.run?e.run():null;return (typeof r==='string'?r:e.m)||''}
+function applyFx(){const f=S.fx,b=document.body;
+  ['comic','dark','hue','haunt','float','jet','small'].forEach(k=>b.classList.toggle('fx-'+k,!!f[k]&&S.running));
+  const fl=[];if(f.grey)fl.push('grayscale(1)');if(f.invert)fl.push('invert(1) hue-rotate(180deg)');if(f.bright)fl.push('brightness(1.4) saturate(1.6)');if(f.sun)fl.push('brightness(1.9) contrast(.75)');
+  $('#app').style.filter=S.running&&fl.length?fl.join(' '):'';
+  $('#fxline').textContent=S.running?Object.keys(f).filter(k=>FXLABEL[k]).map(k=>'● '+FXLABEL[k]+(f[k]>=99?'':' ('+f[k]+')')).join('  '):''}
+function who(){if(S.fx.toaster)return 'THE TOASTER';if(S.fx.pigeon)return 'A PIGEON';const w=pick(WHO);
+  if(w==='THE SMART FRIDGE'&&S.fridgeName)return S.fridgeName+' (FRIDGE)';if(w==='YOUR NAN'&&S.nanMuted)return 'YOUR NAN (MUTED)';return w}
 const TERMS=["1. By looking at this menu you agree to the menu.","2. The menu may contain additional menus, which you also agree to.","3. MenuCorp may change these Terms at any time, including during this sentence.","4. You grant MenuCorp a perpetual licence to your thumb.","5. Cookies are not food. Food is not cookies. Do not eat the banner.","6. The Back button is provided as is, and as is not.","7. Any resemblance to a usable interface is coincidental.","8. You waive your right to a search bar.","9. Disputes will be settled by a dropdown of 400 countries.","10. The Fridge has read these Terms. Have you?","11. Clause 11 intentionally left confusing.","12. If you have scrolled this far, you may proceed. Well done. Nobody does."];
 
 /* collectables: [name, rarity, flavour, perk key, perk text] */
@@ -448,7 +554,7 @@ function drawPointy(cv,scale,m){
 }
 function pointyLoop(){drawPointy($('#pc'),4,mood);if(!$('#title').hidden)drawPointy($('#tpc'),6,'good');requestAnimationFrame(pointyLoop)}
 let sayT=0;
-function say(t,m='ok',ms=1400){$('#bubble').textContent=t;mood=m;clearTimeout(sayT);sayT=setTimeout(()=>{mood='ok'},ms)}
+function say(t,m='ok',ms=1400){if(S.fx&&S.fx.silent&&S.running)t='(unsubscribed)';$('#bubble').textContent=t;mood=m;clearTimeout(sayT);sayT=setTimeout(()=>{mood='ok'},ms)}
 
 function fillCard(el,name,count){
   const it=ITEM[name],locked=!(count>0);el.style.setProperty('--rc',locked?'var(--panel-lo)':RVAR[it.r]);el.innerHTML='';
@@ -464,15 +570,15 @@ function fillCard(el,name,count){
 /* ---------- STATE ---------- */
 const S={running:false,paused:false,modal:false,loading:false,score:0,level:0,combo:0,maxCombo:0,insane:store.get('ms26-insane',false),
   time:25,maxTime:40,path:[],step:0,opts:[],layout:'',cur:'',page:0,dropOpen:false,mega:false,lastT:0,lastSec:99,ok:0,bad:0,token:0,menuId:0,
-  frenzyUntil:0,pendingFrenzy:false,runItems:[],runMenus:0,drop:null};
+  frenzyUntil:0,pendingFrenzy:false,runItems:[],runMenus:0,drop:null,fx:{},onceFx:null,snoozeNext:false,snoozeUntil:0,fridgeName:null,nanMuted:false,forcedAt:-1};
 const frenzy=()=>performance.now()<S.frenzyUntil;
-function mult(){return (S.insane?2:1)*(has('cursed')?2:1)*(has('haunted')?1.5:1)*(frenzy()?3:1)}
-function diff(){const L=S.level+(S.insane?5:0);return{len:Math.min(2+Math.floor(L/1.5),9),n:Math.min(3+Math.floor(L/2),7)+(has('haunted')?1:0),
-  typo:Math.min(.25+L*.06,.85),drain:Math.min(1+L*.06,2.2),gain:Math.min(1.2+L*.08,2.3),
-  chaos:(S.level<1&&!S.insane)?0:Math.min(Math.min(.12+L*.03,.55)*(has('cursed')?1.5:1),.8)}}
+function mult(){return (S.fx.turbo?2:1)*(S.insane?2:1)*(has('cursed')?2:1)*(has('haunted')?1.5:1)*(frenzy()?3:1)}
+function diff(){const L=S.level+(S.insane?5:0);return{len:Math.min(2+Math.floor(L/1.5),9),n:Math.min(3+Math.floor(L/2),7)+(has('haunted')?1:0)+(S.fx.fed?1:0),
+  typo:Math.min(.25+L*.06,.85),drain:Math.min(1+L*.06,2.2)*(S.fx.turbo?1.5:1),gain:Math.min(1.2+L*.08,2.3),
+  chaos:(S.level<1&&!S.insane)||S.fx.nochaos?0:Math.min(Math.min(.12+L*.03,.55)*(has('cursed')?1.5:1)*(S.fx.chaos2?2:1),.9)}}
 
 /* ---------- UI HELPERS ---------- */
-function toast(t){const el=$('#toast');el.textContent=t;el.classList.remove('show');void el.offsetWidth;el.classList.add('show')}
+function toast(t,force){if(S.fx.quiet&&!force&&S.running)return;const el=$('#toast');el.textContent=t;el.classList.remove('show');void el.offsetWidth;el.classList.add('show')}
 function shake(){const a=$('#app');a.classList.remove('shake');void a.offsetWidth;a.classList.add('shake')}
 function floatAt(el,text,minus){const r=el.getBoundingClientRect();const f=document.createElement('div');f.className='float'+(minus?' minus':'');f.textContent=text;
   f.style.left=(r.left+r.width*.6)+'px';f.style.top=(r.top-4)+'px';document.body.appendChild(f);setTimeout(()=>f.remove(),800)}
@@ -496,12 +602,12 @@ function newTask(){
   for(let i=0;i<len-2;i++)path.push(mids[i]);
   path.push(pick(LEAF));S.path=path;S.step=0;
   $('#goal').classList.toggle('mega',S.mega);
-  $('#ticket').textContent=S.mega?`★ MEGA TICKET · ${pick(WHO)} · 3× BONUS`:`#${1000+Math.floor(Math.random()*9000)} · ${pick(WHO)} · ${pick(URG)}`;
+  $('#ticket').textContent=S.mega?`★ MEGA TICKET · ${who()} · 3× BONUS`:`#${1000+Math.floor(Math.random()*9000)} · ${who()} · ${pick(URG)}`;
   if(S.mega){toast('★ MEGA TICKET ★ 12 MENUS DEEP. GUARANTEED LOOT.');sfx.mega()}
   renderMenu();
 }
 function renderGoal(){
-  const c=$('#crumbs');c.innerHTML='';c.classList.toggle('dense',S.path.length>6);
+  const c=$('#crumbs');c.innerHTML='';c.classList.toggle('dense',S.path.length>6);c.classList.toggle('voided',!!S.fx.void);
   S.path.forEach((p,i)=>{if(i){const s=document.createElement('span');s.className='sep';s.textContent='›';c.appendChild(s)}
     const e=document.createElement('span');e.className='crumb'+(i<S.step?' done':i===S.step?' now':'');e.textContent=p;c.appendChild(e)});
   $('#stepno').textContent=`STEP ${Math.min(S.step+1,S.path.length)}/${S.path.length}`;
@@ -509,9 +615,9 @@ function renderGoal(){
 function buildOptions(d){
   const correct=S.path[S.step],pool=S.step===0?ROOT:S.step===S.path.length-1?LEAF:MID;
   const out=[correct],seen=new Set([correct.toLowerCase()]);let g=0;
-  if(S.step>0&&Math.random()<.3){out.push(BACK);seen.add('back')}
+  if(S.step>0&&!S.fx.noback&&Math.random()<.3){out.push(BACK);seen.add('back')}
   while(out.length<d.n&&g++<300){const c=Math.random()<d.typo?typo(correct):pick(pool);if(!seen.has(c.toLowerCase())&&!S.path.includes(c)){seen.add(c.toLowerCase());out.push(c)}}
-  return shuffle(out);
+  return S.fx.sort?out.sort((a,b)=>a.localeCompare(b)):shuffle(out);
 }
 function typo(w){
   const L=[...w], i=1+Math.floor(Math.random()*Math.max(1,L.length-2)), r=Math.random(); let s=w;
@@ -529,7 +635,7 @@ function sysBtn(label,fn){const b=document.createElement('button');b.type='butto
 function renderMenu(keep){
   if(!keep){S.opts=buildOptions(diff());S.cur=S.layout;S.layout='';S.page=0;S.dropOpen=false;S.menuId++;S.runMenus++;
     if(S.cur==='drift'){const id=S.menuId;const iv=setInterval(()=>{if(id!==S.menuId||!S.running){clearInterval(iv);return}if(S.paused||S.modal)return;shuffle(S.opts);renderMenu(true)},850)}}
-  $('#wtitle').textContent=S.step===0?'MAIN MENU':S.path[S.step-1].toUpperCase();
+  $('#wtitle').textContent=S.fx.settings?'SETTINGS':S.step===0?'MAIN MENU':S.path[S.step-1].toUpperCase();
   $('#depth').textContent='D'+(S.step+1);
   const list=$('#list');list.className='list';if(['mirror','upside','tiny'].includes(S.cur))list.classList.add(S.cur);
   list.innerHTML='';
@@ -566,6 +672,8 @@ function advance(){
   S.step++;
   if(S.step>=S.path.length)return completeTask();
   const d=diff();
+  const forced=S.fx.update&&S.forcedAt!==S.level?'update':S.fx.terms&&S.forcedAt!==S.level?'terms':null;
+  if(forced&&!frenzy()){S.forcedAt=S.level;return MODALS.find(f=>f.name===forced)()}
   if(!frenzy()&&Math.random()<d.chaos){
     const r=Math.random();
     if(r<.45){S.layout=pick(Object.keys(LAYOUTS));renderMenu();toast(LAYOUTS[S.cur]);sfx.pop()}
@@ -574,6 +682,9 @@ function advance(){
   }else renderMenu();
 }
 function completeTask(){
+  const skipIntro=!!S.fx.skip;
+  Object.keys(S.fx).forEach(k=>{if(S.fx[k]<99&&--S.fx[k]<=0)delete S.fx[k]});
+  const leafMsg=applyLeaf(S.path[S.path.length-1]);
   S.level++;const bonus=Math.round(100*S.level*(S.mega?3:1)*(has('crown')?1.5:1)*(S.insane?2:1));S.score+=bonus;
   S.time=Math.min(S.maxTime,S.time+2+S.path.length*.6);hud();
   S.mega?sfx.mega():sfx.complete();
@@ -583,22 +694,27 @@ function completeTask(){
   if(S.level%5===0)S.pendingFrenzy=true;
   $('#ititle').textContent=S.mega?'MEGA TICKET CLEARED':'TASK COMPLETE';
   $('#ibonus').textContent=`+${fmt(bonus)} BONUS · LEVEL ${S.level+1}${S.pendingFrenzy?' · FRENZY INCOMING':''}`;
+  $('#ifx').textContent=leafMsg?'▸ '+S.path[S.path.length-1].toUpperCase()+': '+leafMsg:'';
   const dr=$('#idrop');dr.innerHTML='';
   if(item){const cd=document.createElement('div');cd.className='card';fillCard(cd,item,P.col[item]);cd.querySelector('.rar').textContent=(isNew?'NEW! ':'DUPLICATE · ')+RNAME[ITEM[item].r];dr.appendChild(cd);setTimeout(()=>sfx.rarity(ITEM[item].r),350)}
   const wi=Math.floor(Math.random()*WISDOM.length);
   $('#iquote').innerHTML='';const sm=document.createElement('small');sm.textContent=`PEARL OF WISDOM #${wi+1}`;$('#iquote').append(sm,WISDOM[wi]);
-  const ms=item?2600:2000;
+  const ms=skipIntro?0:item?3000:2400;
   const pr=$('#iprog');pr.style.transition='none';pr.style.width='0';$('#inter').hidden=false;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{pr.style.transition=`width ${ms/1000-.1}s steps(12)`;pr.style.width='100%'}));
   const go=()=>{if(tok!==S.token||$('#inter').hidden)return;$('#inter').hidden=true;S.paused=false;S.lastT=performance.now();
+    applyFx();
+    if(S.onceFx){const c='fx-'+S.onceFx;S.onceFx=null;document.body.classList.add(c);sfx.shuffle();setTimeout(()=>document.body.classList.remove(c),950)}
+    if(S.snoozeNext){S.snoozeNext=false;S.snoozeUntil=performance.now()+4000;toast('SNOOZING… TIMER FROZEN 4s',true)}
     if(S.pendingFrenzy){S.pendingFrenzy=false;S.frenzyUntil=performance.now()+9000;toast('MENU FRENZY · 3× POINTS · NO CHAOS · TIME FROZEN');sfx.frenzy()}
     newTask()};
+  if(skipIntro&&leafMsg)setTimeout(()=>toast(leafMsg,true),50);
   setTimeout(go,ms);$('#inter').onclick=()=>{sfx.nav();go()};
 }
 function loop(t){
   if(!S.running)return;
   const dt=Math.min(.1,(t-S.lastT)/1000);S.lastT=t;
-  if(!S.paused&&!frenzy()){S.time-=dt*diff().drain;const sec=Math.ceil(S.time);if(S.time<5&&sec!==S.lastSec){S.lastSec=sec;sfx.tick()}}
+  if(!S.paused&&!frenzy()&&t>S.snoozeUntil){S.time-=dt*diff().drain;const sec=Math.ceil(S.time);if(S.time<5&&sec!==S.lastSec){S.lastSec=sec;sfx.tick()}}
   hud();
   if(S.time<=0)return gameOver();
   requestAnimationFrame(loop);
@@ -607,15 +723,15 @@ function startGame(){
   audio();sfx.start();
   S.maxTime=40+(has('timebar')?10:0);
   Object.assign(S,{running:true,paused:false,modal:false,loading:false,score:0,level:0,combo:0,maxCombo:0,time:(S.insane?22:25)+(has('chrono')?5:0),
-    ok:0,bad:0,layout:'',cur:'',lastSec:99,frenzyUntil:0,pendingFrenzy:false,runItems:[],runMenus:0});
+    ok:0,bad:0,layout:'',cur:'',lastSec:99,frenzyUntil:0,pendingFrenzy:false,runItems:[],runMenus:0,fx:{},onceFx:null,snoozeNext:false,snoozeUntil:0,fridgeName:null,nanMuted:false,forcedAt:-1});
   S.token++;showOnly(null);
   const perks=ITEMS.filter(i=>i[3]&&P.col[i[0]]>0).length;
   say(S.insane?"INSANE MODE. I can't watch.":perks?`${perks} perk${perks>1?'s':''} active. Go.`:"Follow the objective. Trust nothing.",'ok');
-  newTask();hud();S.lastT=performance.now();requestAnimationFrame(loop);
+  applyFx();newTask();hud();S.lastT=performance.now();requestAnimationFrame(loop);
 }
 function gameOver(){
   S.running=false;S.token++;S.menuId++;S.time=0;S.frenzyUntil=0;hud();document.body.classList.remove('frenzy');sfx.over();
-  S.modal=false;S.loading=false;
+  S.modal=false;S.loading=false;applyFx();
   const nb=S.score>P.best,gap=P.best-S.score;if(nb)P.best=S.score;
   const earned=Math.round((S.score/20+S.level*10)*(has('magnet')?1.25:1));
   P.bucks+=earned;P.menus+=S.runMenus;P.runs++;save();
@@ -739,7 +855,7 @@ function titleOpts(){const m=$('#tmenu');m.innerHTML='';
   const d=mk('DIFFICULTY: '+(S.insane?'INSANE':'NORMAL'),'big',()=>{S.insane=!S.insane;store.set('ms26-insane',S.insane);d.textContent='DIFFICULTY: '+(S.insane?'INSANE':'NORMAL');sfx.nav();if(S.insane)toast('INSANE: DEEPER MENUS, MORE CHAOS, 2× POINTS')});
   let depth=0;const o=mk('OPTIONS','big',()=>{depth++;sfx.nav();o.textContent='OPTIONS'+' ›'.repeat(Math.min(depth,6));toast(depth<5?'YOU ARE ALREADY IN OPTIONS. GOING DEEPER…':'THERE IS NOTHING DOWN HERE. EXCEPT YOU.')});
   m.append(s,d,o,mk('◄ BACK','big',()=>{sfx.nav();titleMain()}))}
-function showTitle(){S.running=false;S.token++;S.menuId++;S.modal=false;document.body.classList.remove('frenzy');showOnly('#title');titleMain();cycleQuote()}
+function showTitle(){S.running=false;S.token++;S.menuId++;S.modal=false;document.body.classList.remove('frenzy');applyFx();showOnly('#title');titleMain();cycleQuote()}
 function cycleQuote(){const q=$('#tquote');q.innerHTML='';const sm=document.createElement('small');const qi=Math.floor(Math.random()*WISDOM.length);sm.textContent=`PEARL OF WISDOM #${qi+1}`;q.append(sm,WISDOM[qi])}
 setInterval(()=>{if(!$('#title').hidden)cycleQuote()},4500);
 
