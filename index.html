@@ -727,19 +727,25 @@ const BOX_COST=150;
 /* ---------- PERSISTENT ---------- */
 const P={best:store.get('ms26-best',0),col:store.get('ms26-col',{}),bucks:store.get('ms26-bucks',null),menus:store.get('ms26-menus',0),runs:store.get('ms26-runs',0)};
 if(P.bucks===null){P.bucks=BOX_COST;store.set('ms26-bucks',P.bucks);P.welcome=true}
-P.pity=store.get('ms26-pity',0);P.ribbons=store.get('ms26-ribbons',3);P.save=store.get('ms26-save',null);
+P.pity=store.get('ms26-pity',0);P.dda=Object.assign({scores:[],bad:0,cStreak:0,dupStreak:0,pulls:0},store.get('ms26-dda',{}));P.ribbons=store.get('ms26-ribbons',3);P.save=store.get('ms26-save',null);
 {let recalled=0;Object.keys(P.col).forEach(n=>{if(!ITEM[n]){recalled+=P.col[n];delete P.col[n]}});
  if(recalled){P.bucks+=recalled*30;store.set('ms26-col',P.col);store.set('ms26-bucks',P.bucks);P.notice=`OLD COLLECTABLES RECALLED FOR NOT BEING MENUS. +${recalled*30} MB`}}
 {const today=new Date().toDateString();if(store.get('ms26-day','')!==today){store.set('ms26-day',today);if(!P.welcome){P.bucks+=50;store.set('ms26-bucks',P.bucks);P.daily=true}}}
-function save(){store.set('ms26-best',P.best);store.set('ms26-col',P.col);store.set('ms26-bucks',P.bucks);store.set('ms26-menus',P.menus);store.set('ms26-runs',P.runs);store.set('ms26-pity',P.pity);store.set('ms26-ribbons',P.ribbons);store.set('ms26-save',P.save)}
+function save(){store.set('ms26-best',P.best);store.set('ms26-col',P.col);store.set('ms26-bucks',P.bucks);store.set('ms26-menus',P.menus);store.set('ms26-runs',P.runs);store.set('ms26-pity',P.pity);store.set('ms26-dda',P.dda);store.set('ms26-ribbons',P.ribbons);store.set('ms26-save',P.save)}
 const ownedCount=()=>ITEMS.filter(i=>P.col[i[0]]>0).length;
 const has=k=>ITEMS.some(i=>i[3]===k&&P.col[i[0]]>0);
 function rollItem(boost,pity){
   const one=()=>{const x=Math.random();return x<.015?'X':x<.06?'L':x<.18?'E':x<.45?'R':'C'};
   let r=one();if(boost){const r2=one();if(RORD.indexOf(r2)>RORD.indexOf(r))r=r2}
-  if(pity){if(RORD.indexOf(r)<2&&P.pity>=9){const x=Math.random();r=x<.12?'X':x<.35?'L':'E'}
-    P.pity=RORD.indexOf(r)>=2?0:P.pity+1}
-  return pick(ITEMS.filter(i=>i[1]===r))[0];
+  let favourNew=0;
+  if(pity){
+    if(r==='C'&&Math.random()<Math.min(.6,Math.max(0,P.dda.cStreak-2)*.12))r=Math.random()<.8?'R':'E';
+    if(P.dda.pulls===0&&RORD.indexOf(r)<1)r='R';
+    if(RORD.indexOf(r)<2&&P.pity>=9){const x=Math.random();r=x<.12?'X':x<.35?'L':'E'}
+    P.pity=RORD.indexOf(r)>=2?0:P.pity+1;P.dda.cStreak=r==='C'?P.dda.cStreak+1:0;
+    favourNew=P.dda.pulls===0?1:Math.min(.9,.35+P.dda.dupStreak*.15);P.dda.pulls++}
+  const pool=ITEMS.filter(i=>i[1]===r),fresh=pool.filter(i=>!(P.col[i[0]]>0));
+  return (fresh.length&&Math.random()<favourNew?pick(fresh):pick(pool))[0];
 }
 function grant(name){const isNew=!(P.col[name]>0);P.col[name]=(P.col[name]||0)+1;save();return isNew}
 
@@ -859,12 +865,19 @@ function fillCard(el,name,count){
 /* ---------- STATE ---------- */
 const S={running:false,paused:false,modal:false,loading:false,score:0,level:0,combo:0,maxCombo:0,insane:store.get('ms26-insane',false),
   time:25,maxTime:40,path:[],step:0,opts:[],layout:'',cur:'',page:0,dropOpen:false,mega:false,lastT:0,lastSec:99,ok:0,bad:0,token:0,menuId:0,
-  frenzyUntil:0,pendingFrenzy:false,runItems:[],runMenus:0,drop:null,fx:{},onceFx:null,snoozeNext:false,snoozeUntil:0,fridgeName:null,nanMuted:false,forcedAt:-1};
+  frenzyUntil:0,pendingFrenzy:false,runItems:[],runMenus:0,drop:null,hist:[],fx:{},onceFx:null,snoozeNext:false,snoozeUntil:0,fridgeName:null,nanMuted:false,forcedAt:-1};
 const frenzy=()=>performance.now()<S.frenzyUntil;
 function mult(){return (S.fx.turbo?2:1)*(S.insane?2:1)*(has('cursed')?2:1)*(has('haunted')?1.5:1)*(frenzy()?3:1)}
-function diff(){const L=S.level+(S.insane?5:0);return{len:Math.min(2+Math.floor(L/1.5),9),n:Math.min(3+Math.floor(L/2),7)+(has('haunted')?1:0)+(S.fx.fed?1:0),
+function diffBase(){const L=S.level+(S.insane?5:0);return{len:Math.min(2+Math.floor(L/1.5),9),n:Math.min(3+Math.floor(L/2),7)+(has('haunted')?1:0)+(S.fx.fed?1:0),
   typo:Math.min(.25+L*.06,.85),drain:Math.min(1+L*.06,2.2)*(S.fx.turbo?1.5:1),gain:Math.min(1.2+L*.08,2.3),
   chaos:(S.level<1&&!S.insane)||S.fx.nochaos?0:Math.min(Math.min(.12+L*.03,.55)*(has('cursed')?1.5:1)*(S.fx.chaos2?2:1),.9)}}
+/* Hidden assist. Reads recent accuracy and how the last few runs went, then quietly eases or tightens the run.
+   ease > 0 helps a struggling player, ease < 0 adds pressure to one who is cruising. Kept within about ±25%. */
+function ease(){const h=(S.hist||[]).slice(-10);const acc=h.length>=3?h.reduce((a,b)=>a+b,0)/h.length:.8;
+  const skill=Math.max(-1,Math.min(1,(acc-.75)*4));const early=S.level<3?1:.4;const assist=Math.min(.75,(P.dda.bad||0)*.25)*early;
+  return Math.max(-.35,Math.min(1,-skill*.55+assist))}
+function diff(){const d=diffBase(),e=ease(),up=Math.max(0,e),down=Math.max(0,-e);
+  d.n=Math.max(3,d.n-(e>.55?1:0));d.typo=Math.max(.1,d.typo*(1-.35*up)+.1*down);d.drain*=1-.25*up+.15*down;d.gain*=1+.3*up;d.chaos*=1-.4*up;return d}
 
 /* ---------- UI HELPERS ---------- */
 function toast(t,force){if(S.fx.quiet&&!force&&S.running)return;const el=$('#toast');el.textContent=t;el.classList.remove('show');void el.offsetWidth;el.classList.add('show')}
@@ -877,7 +890,7 @@ function burst(el,n=12){const r=el.getBoundingClientRect();const cs=['var(--hi)'
   document.body.appendChild(p);setTimeout(()=>p.remove(),550)}}
 function hud(){const fr=frenzy();$('#score').textContent=String(S.score).padStart(6,'0');$('#lv').textContent=S.level+1;
   const cb=$('#combo');cb.textContent=(fr?'FRENZY ':'')+'x'+S.combo;cb.classList.toggle('fr',fr);
-  $('#timefill').style.width=(Math.max(0,S.time/S.maxTime)*100)+'%';$('#timebar').classList.toggle('low',S.time<6&&!fr);$('#timebar').classList.toggle('fr',fr);
+  $('#timefill').style.width=(Math.pow(Math.max(0,S.time/S.maxTime),1.3)*100)+'%';$('#timebar').classList.toggle('low',S.time<7&&!fr);$('#timebar').classList.toggle('fr',fr);
   document.body.classList.toggle('frenzy',fr&&S.running)}
 function setMute(m){muted=m;store.set('ms26-muted',m);$('#mute').textContent=m?'SND OFF':'SND ON'}
 function mk(label,cls,fn){const b=document.createElement('button');b.type='button';b.className='btn '+(cls||'');b.textContent=label;b.addEventListener('click',fn);return b}
@@ -921,9 +934,9 @@ function makeWidget(type,ctx){const title=String(ctx||'SETTINGS').toUpperCase();
 function widgetDone(ok,el){
   if(!S.running||S.paused||S.modal||S.loading)return false;
   if(ok){const cw=S.widgets&&S.widgets[S.step];if(cw&&WDROP[cw.type]&&Math.random()<.1){const it=WDROP[cw.type];const nw=grant(it);S.runItems.push(it);setTimeout(()=>{toast(`FOUND: ${it.toUpperCase()}${nw?' · NEW!':''}`,true);sfx.rarity(ITEM[it].r)},250)}
-    S.combo++;S.ok++;S.maxCombo=Math.max(S.maxCombo,S.combo);const pts=Math.round(25*S.combo*mult()*(has('key')?1.5:1));S.score+=pts;S.time=Math.min(S.maxTime,S.time+diff().gain*1.5);
+    S.combo++;S.ok++;S.hist.push(1);S.maxCombo=Math.max(S.maxCombo,S.combo);const pts=Math.round(25*S.combo*mult()*(has('key')?1.5:1));S.score+=pts;S.time=Math.min(S.maxTime,S.time+diff().gain*1.5);
     floatAt(el,'+'+pts);burst(el,16);sfx.coin();say(pick(GOOD),'good',900);hud();advance()}
-  else{S.combo=has('crystal')?Math.floor(S.combo/2):0;S.bad++;S.time-=2;floatAt(el,'-2s',true);sfx.wrong();shake();say(pick(WBAD),'bad');hud()}
+  else{S.combo=has('crystal')?Math.floor(S.combo/2):0;S.bad++;S.hist.push(0);S.time-=2;floatAt(el,'-2s',true);sfx.wrong();shake();say(pick(WBAD),'bad');hud()}
   return true}
 function wbtn(label,cls,fn){const b=mk(label,cls,fn);return b}
 const WR={
@@ -1125,7 +1138,7 @@ function choose(i,btn){
   if(!S.running||S.paused||S.modal||S.loading)return;
   const label=S.opts[i];
   if(label===S.path[S.step]){
-    S.combo++;S.ok++;S.maxCombo=Math.max(S.maxCombo,S.combo);
+    S.combo++;S.ok++;S.hist.push(1);S.maxCombo=Math.max(S.maxCombo,S.combo);
     const pts=Math.round(10*S.combo*mult());S.score+=pts;S.time=Math.min(S.maxTime,S.time+diff().gain);
     btn.classList.add('ok');floatAt(btn,'+'+pts);burst(btn,frenzy()?20:12);sfx.click(S.combo);
     const cb=$('#combo');cb.classList.remove('pump');void cb.offsetWidth;cb.classList.add('pump');
@@ -1135,7 +1148,7 @@ function choose(i,btn){
     advance();
   }else{
     if(label===BACK&&has('back')){btn.classList.add('no');sfx.nav();say("Golden Back Button. Free, useless, shiny.",'ok');return}
-    S.combo=has('crystal')?Math.floor(S.combo/2):0;S.bad++;S.time-=3;btn.classList.add('no');floatAt(btn,'-3s',true);sfx.wrong();shake();
+    S.combo=has('crystal')?Math.floor(S.combo/2):0;S.bad++;S.hist.push(0);S.time-=3;btn.classList.add('no');floatAt(btn,'-3s',true);sfx.wrong();shake();
     say(label===BACK?"There is no going back. Only deeper.":pick(BAD),'bad',1400);
   }
   hud();
@@ -1190,7 +1203,11 @@ function completeTask(){
 function loop(t){
   if(!S.running)return;
   const dt=Math.min(.1,(t-S.lastT)/1000);S.lastT=t;
-  if(!S.paused&&!frenzy()&&t>S.snoozeUntil){S.time-=dt*diff().drain;const sec=Math.ceil(S.time);if(S.time<5&&sec!==S.lastSec){S.lastSec=sec;sfx.tick()}}
+  if(!S.paused&&!frenzy()&&t>S.snoozeUntil){const mercy=S.time<2?.45:S.time<4?.65:1;S.time-=dt*diff().drain*mercy;const sec=Math.ceil(S.time);
+    if(S.time<5&&sec!==S.lastSec){S.lastSec=sec;sfx.tick();tone(58,.2,'sine',.14);tone(52,.18,'sine',.1,.18)}
+    if(S.time<2.2&&!S.mercyUsed&&!S.modal&&(S.score>=P.best*.75||P.dda.bad>0||ease()>.3)){S.mercyUsed=true;S.time+=4;sfx.coin();toast(pick(['A WILD GREEN TOGGLE FELL OUT OF A MENU · +4s','THE FRIDGE BELIEVES IN YOU · +4s','LOOSE SECONDS FOUND IN MISCELLANEOUS · +4s']),true)}
+    if(P.best>0&&!S.bestNear&&S.score>=P.best*.85&&S.score<P.best){S.bestNear=true;toast('YOUR BEST IS IN SIGHT. DO NOT BLOW THIS.',true);sfx.combo(8)}
+    if(P.best>0&&!S.bestBeat&&S.score>P.best){S.bestBeat=true;toast('NEW RECORD TERRITORY. EVERY MENU COUNTS NOW.',true);sfx.mega()}}
   hud();
   if(S.time<=0)return gameOver();
   requestAnimationFrame(loop);
@@ -1199,7 +1216,8 @@ function startGame(e){const fromSave=e===true&&!!P.save;
   audio();sfx.start();Music.stop();
   S.maxTime=40+(has('timebar')?10:0);
   Object.assign(S,{running:true,paused:false,modal:false,loading:false,score:0,level:0,combo:0,maxCombo:0,time:(S.insane?22:25)+(has('chrono')?5:0),
-    ok:0,bad:0,layout:'',cur:'',lastSec:99,frenzyUntil:0,pendingFrenzy:false,runItems:[],runMenus:0,fx:{},onceFx:null,snoozeNext:false,snoozeUntil:0,fridgeName:null,nanMuted:false,forcedAt:-1,widgets:{},inRoom:false,forceRoom:false});
+    ok:0,bad:0,layout:'',cur:'',lastSec:99,frenzyUntil:0,pendingFrenzy:false,runItems:[],runMenus:0,fx:{},onceFx:null,snoozeNext:false,snoozeUntil:0,fridgeName:null,nanMuted:false,forcedAt:-1,widgets:{},inRoom:false,forceRoom:false,hist:[],mercyUsed:false,bestNear:false,bestBeat:false});
+  S.time+=Math.min(3,P.dda.bad||0)*3;
   S.token++;showOnly(null);
   const perks=ITEMS.filter(i=>i[3]&&P.col[i[0]]>0).length;
   say(S.insane?"INSANE MODE. I can't watch.":perks?`${perks} perk${perks>1?'s':''} active. Go.`:"Follow the objective. Trust nothing.",'ok');
@@ -1212,11 +1230,14 @@ function gameOver(){
   S.running=false;S.token++;S.menuId++;S.time=0;Music.stop();S.frenzyUntil=0;hud();document.body.classList.remove('frenzy');sfx.over();
   S.modal=false;S.loading=false;applyFx();
   const nb=S.score>P.best,gap=P.best-S.score;if(nb)P.best=S.score;
-  const earned=Math.round((S.score/20+S.level*10)*(has('magnet')?1.25:1));
+  const sc=P.dda.scores.slice(-5),med=sc.length?sc.slice().sort((a,b)=>a-b)[Math.floor(sc.length/2)]:0;
+  if(S.level<2||(med>0&&S.score<med*.5))P.dda.bad=Math.min(4,P.dda.bad+1);else P.dda.bad=Math.max(0,P.dda.bad-1);P.dda.scores=sc.concat([S.score]).slice(-5);
+  const unlucky=P.dda.cStreak>=4||P.dda.dupStreak>=3;
+  const earned=Math.round((S.score/20+S.level*10)*(has('magnet')?1.25:1)*(unlucky?1.3:1));
   P.bucks+=earned;P.menus+=S.runMenus;P.runs++;save();
   const acc=S.ok+S.bad?Math.round(100*S.ok/(S.ok+S.bad)):0;
   const rank=RANKS.filter(r=>S.score>=r[0]).pop()[1];
-  $('#ostats').innerHTML=`<dt>SCORE</dt><dd>${fmt(S.score)}${nb?' <span class="newbest">NEW BEST</span>':''}</dd><dt>BEST</dt><dd>${fmt(P.best)}</dd><dt>TASKS DONE</dt><dd>${S.level}</dd><dt>MENUS OPENED</dt><dd>${S.runMenus}</dd><dt>MAX COMBO</dt><dd>x${S.maxCombo}</dd><dt>ACCURACY</dt><dd>${acc}%</dd><dt>ITEMS FOUND</dt><dd>${S.runItems.length}</dd><dt>MENU BUCKS</dt><dd>+${fmt(earned)}</dd><dt>INK RIBBONS</dt><dd>${P.ribbons}</dd><dt class="rank">RANK: ${rank}</dt>`;
+  $('#ostats').innerHTML=`<dt>SCORE</dt><dd>${fmt(S.score)}${nb?' <span class="newbest">NEW BEST</span>':''}</dd><dt>BEST</dt><dd>${fmt(P.best)}</dd><dt>TASKS DONE</dt><dd>${S.level}</dd><dt>MENUS OPENED</dt><dd>${S.runMenus}</dd><dt>MAX COMBO</dt><dd>x${S.maxCombo}</dd><dt>ACCURACY</dt><dd>${acc}%</dd><dt>ITEMS FOUND</dt><dd>${S.runItems.length}</dd><dt>MENU BUCKS</dt><dd>+${fmt(earned)}${unlucky?' <small>(LOYALTY BONUS)</small>':''}</dd><dt>INK RIBBONS</dt><dd>${P.ribbons}</dd><dt class="rank">RANK: ${rank}</dt>`;
   $('#onear').textContent=nb?'A NEW RECORD. THE MENUS ARE NERVOUS.':gap>0&&gap<S.score*.25?`ONLY ${fmt(gap)} POINTS FROM YOUR BEST. SO CLOSE.`:P.bucks>=BOX_COST?`YOU CAN AFFORD A MENU BOX (${fmt(P.bucks)} MB).`:'YOU RAN OUT OF TIME. THE MENUS DID NOT.';
   $('#oquote').innerHTML='';const sm=document.createElement('small');const wi=Math.floor(Math.random()*WISDOM.length);sm.textContent=`PARTING PEARL #${wi+1}`;$('#oquote').append(sm,WISDOM[wi]);
   const ol=$('#oload');ol.hidden=!P.save;if(P.save)ol.textContent=`▸ LOAD SAVE (LV ${P.save.level+1})`;$('#again').classList.toggle('prime',!P.save);
@@ -1327,7 +1348,8 @@ function openBox(n){
 }
 function finishOpen(items,best,n){
   const r=ITEM[best].r,hype=$('#hype');
-  const res=items.map(it=>{const nw=grant(it);if(!nw){P.bucks+=25}return{it,nw}});save();
+  const res=items.map(it=>{const nw=grant(it);if(!nw){P.bucks+=25}return{it,nw}});
+  res.forEach(x=>{P.dda.dupStreak=x.nw?0:P.dda.dupStreak+1});save();
   const top=res.find(x=>x.it===best);
   hype.textContent=pick(LETDOWN[r]).replace('{n}',best).replace(/\ba ([AEIOU])/g,'an $1');
   $('#btitle').textContent=top.nw?'NEW ITEM!':'DUPLICATE';
@@ -1483,7 +1505,7 @@ function step3D(dt,t){const X=X3,box=X.box,cam=X.cam,T=THREE,hype=$('#hype');
     const ca=b*.25;cam.position.x+=(Math.sin(ca)*5.6-cam.position.x)*Math.min(1,dt*2);cam.position.y+=(2.4-cam.position.y)*Math.min(1,dt*2);cam.position.z+=(Math.cos(ca)*5.6-cam.position.z)*Math.min(1,dt*2);cam.lookAt(0,1.5,0);
     if(b>1&&!X.revealed){X.revealed=true;const cb=X.onDone;X.onDone=null;cb&&cb()}}}
 
-function showRates(){openModal({title:'DROP RATES (LEGALLY REQUIRED)',body:`<table class="rates"><tr><td>Common</td><td>55%</td></tr><tr><td>Rare</td><td>27%</td></tr><tr><td>Epic</td><td>12%</td></tr><tr><td>Legendary</td><td>4.5%</td></tr><tr><td>Cursed</td><td>1.5%</td></tr><tr><td>Something useful</td><td>0%</td></tr><tr><td>What you wanted</td><td>0%</td></tr><tr><td>A real hamburger</td><td>0%</td></tr></table><small>Pity: Epic or better guaranteed by your 10th box. Menu Bucks have no cash value, which is the point.</small>`,
+function showRates(){openModal({title:'DROP RATES (LEGALLY REQUIRED)',body:`<table class="rates"><tr><td>Common</td><td>55%</td></tr><tr><td>Rare</td><td>27%</td></tr><tr><td>Epic</td><td>12%</td></tr><tr><td>Legendary</td><td>4.5%</td></tr><tr><td>Cursed</td><td>1.5%</td></tr><tr><td>Something useful</td><td>0%</td></tr><tr><td>What you wanted</td><td>0%</td></tr><tr><td>A real hamburger</td><td>0%</td></tr></table><small>Pity: Epic or better guaranteed by your 10th box. Bad-luck protection: after unlucky pulls the box quietly leans towards rarer and unowned items, so these odds are the worst case. Menu Bucks have no cash value, which is the point.</small>`,
   build(a){a.appendChild(mk('UNDERSTOOD (I WILL KEEP PULLING)','big prime',()=>{closeModal();sfx.nav()}))}})}
 
 /* ---------- TITLE MENU ---------- */
